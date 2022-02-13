@@ -11,10 +11,10 @@ $ source wordle-venv/bin/activate
 $ pip install -r requirements.txt
 ```
 
-todo: how to set up virtualenv/python reqs reliably & reproducibly
-
 ### Testing
-todo: include example pytest command
+```bash
+$ pytest -rP
+```
 
 ### Running the CLI helper
 todo: include example command and input/output
