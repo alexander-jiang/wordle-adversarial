@@ -57,9 +57,9 @@ class WordleClues(WordleCluesABC):
         self.green_by_position: List[Optional[str]] = [None for _i in range(5)]
 
     def mark(self, letter: str, state: WordleLetterState, position: int) -> None:
-        assert len(letter) == 1 and ord("A") <= ord(letter) <= ord(
-            "Z"
-        ), f"WordleClues.mark() expects a string containing a single upper-case letter, was instead called with {letter}"
+        assert len(letter) == 1 and ord("a") <= ord(letter) <= ord(
+            "z"
+        ), f"WordleClues.mark() expects a string containing a single lower-case letter, was instead called with {letter}"
         assert state in [
             WordleLetterState.GRAY,
             WordleLetterState.YELLOW,
