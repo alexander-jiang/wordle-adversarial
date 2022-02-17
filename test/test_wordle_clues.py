@@ -1,4 +1,4 @@
-from wordle_clues import WordleClues, WordleLetterState, ContradictingClue
+from wordle.wordle_clues import WordleClues, WordleLetterState, ContradictingClue
 import pytest
 
 

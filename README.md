@@ -1,4 +1,5 @@
 ## TODO
+- implement a wordlist searcher that builds a trie and then brute forces all possible resolutions of yellow letters -> green letters. e.g. if first guess is "bread" with clues RRYGR, then the word must be either E__A_, _E_A_, or ___AE (the trie will visit all children if the letter is not specified)
 
 ## Dev Env setup
 ```bash

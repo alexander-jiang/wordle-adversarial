@@ -5,8 +5,8 @@ or green, and the remaining letters with no information)
 """
 from abc import ABC, abstractmethod
 from enum import Enum
-from constants import WORDLE_COLUMNS
 from typing import MutableSet, List, Optional, Dict
+from wordle.constants import WORDLE_COLUMNS
 
 
 class WordleLetterState(Enum):
@@ -93,9 +93,9 @@ class WordleClues(WordleCluesABC):
                         )
                         and letter not in self.yellow_by_position[pos]
                     ):
-                        print(
-                            f"Yellow letter {letter} @ pos {position} could go in position {pos}"
-                        )
+                        # print(
+                        #     f"Yellow letter {letter} @ pos {position} could go in position {pos}"
+                        # )
                         found_possible_location = True
                         break
                 if not found_possible_location:
@@ -144,26 +144,26 @@ class WordleClues(WordleCluesABC):
 
         for gray_letter in self.gray_letters:
             if gray_letter in word:
-                print(f"gray letter {gray_letter} cannot appear in the word")
+                # print(f"gray letter {gray_letter} cannot appear in the word")
                 return False
 
         for green_letter, required_positions in self.green_letter_positions.items():
             for required_pos in required_positions:
                 if word[required_pos] != green_letter:
-                    print(
-                        f"green letter {green_letter} does not appear in position {required_pos}"
-                    )
+                    # print(
+                    #     f"green letter {green_letter} does not appear in position {required_pos}"
+                    # )
                     return False
 
         for yellow_letter in self.yellow_letters_set:
             if yellow_letter not in word:
-                print(f"yellow letter {yellow_letter} must appear in the word")
+                # print(f"yellow letter {yellow_letter} must appear in the word")
                 return False
         for position in range(WORDLE_COLUMNS):
             if word[position] in self.yellow_by_position[position]:
-                print(
-                    f"letter {word[position]} is marked yellow at position {position}"
-                )
+                # print(
+                #     f"letter {word[position]} is marked yellow at position {position}"
+                # )
                 return False
 
         return True
