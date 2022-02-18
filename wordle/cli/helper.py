@@ -4,7 +4,7 @@ CLI tool to run a Wordle "helper" program: you input the clue state
 and it returns a list of possible answer words from the list
 """
 import click
-from typing import List
+from typing import List, Tuple
 
 from wordle.constants import WORDLE_COLUMNS
 from wordle.word_list_searcher import WordListSearcher
@@ -35,6 +35,18 @@ def _is_valid_clues(user_input: str) -> bool:
         if user_input[idx].lower() not in ("r", "y", "g"):
             return False
     return True
+
+def _print_state_with_colors(state: List[Tuple[str, str]]) -> None:
+    for guess, clues in state:
+        output_str = ''
+        for idx in range(WORDLE_COLUMNS):
+            if clues[idx] == 'r':
+                output_str += f"\033[30;100m{guess[idx]}\033[0m"
+            elif clues[idx] == 'y':
+                output_str += f"\033[30;103m{guess[idx]}\033[0m"
+            elif clues[idx] == 'g':
+                output_str += f"\033[30;102m{guess[idx]}\033[0m"
+        print(output_str)
 
 
 @click.command()
@@ -72,6 +84,7 @@ def main(guess_wordlist_path, answer_wordlist_path):
     gray_letters = set()
     yellow_letters = set()
     green_letters = set()
+    state = []
     while True:
         guess_prompt = "Your guess\n"
         guess = click.prompt(guess_prompt, type=str)
@@ -91,6 +104,8 @@ def main(guess_wordlist_path, answer_wordlist_path):
             click.echo("Your colors were not valid, please try again")
             clues = click.prompt(clues_prompt, type=str)
         clues = clues.lower()
+        state.append((guess, clues))
+        _print_state_with_colors(state)
 
         for idx in range(WORDLE_COLUMNS):
             if clues[idx] == "r":
@@ -104,14 +119,15 @@ def main(guess_wordlist_path, answer_wordlist_path):
                 green_letters.add(guess[idx])
             else:
                 raise Exception("should not get here: user input for clues is invalid")
-            actual_clues.mark(guess[idx], color, idx)
 
-            if color == WordleLetterState.GRAY:
+            actual_clues.mark(guess[idx], color, idx)
+            # for 'helpful' guesses: don't include guess words that use the gray letters or that use yellow letters in wrong positions
+            if color == WordleLetterState.GRAY or color == WordleLetterState.YELLOW:
                 helpful_guess_clues.mark(guess[idx], color, idx)
 
         helpful_guesses = guess_list_searcher.match(helpful_guess_clues)
         print(
-            f"{len(helpful_guesses)} potential guesses that don't use the gray letters ({gray_letters}):"
+            f"{len(helpful_guesses)} 'helpful' guesses (i.e. don't use the gray letters {gray_letters} or yellow letters in yellow positions):"
         )
         print(", ".join(sorted(helpful_guesses)))
 

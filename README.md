@@ -1,7 +1,9 @@
 ## TODO
-- implement a wordlist searcher that builds a trie and then brute forces all possible resolutions of yellow letters -> green letters. e.g. if first guess is "bread" with clues RRYGR, then the word must be either E__A_, _E_A_, or ___AE (the trie will visit all children if the letter is not specified)
-- more clever guess suggestions: returns valid guesses that do not use any of the grayed out letters
-    - (additional feature: only include valid guesses which use yellow letters, but not in the marked-yellow positions, or in positions that already have a green letter)
+- [ ] implement a wordlist searcher that builds a trie and then brute forces all possible resolutions of yellow letters -> green letters. e.g. if first guess is "bread" with clues RRYGR, then the word must be either E__A_, _E_A_, or ___AE (the trie will visit all children if the letter is not specified)
+- [x] more clever guess suggestions: returns valid guesses that do not use any of the grayed out letters
+- [x] additional feature: only include valid guesses which use yellow letters, but not in the marked-yellow positions,
+- [ ] but maybe we should include guesses which don't use the yellow letters at all
+- [ ] don't include guesses which use yellow letters in positions that already have a green letter
 
 ## Dev Env setup
 ```bash
