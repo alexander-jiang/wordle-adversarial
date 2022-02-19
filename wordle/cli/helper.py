@@ -7,44 +7,25 @@ import click
 from typing import List, Tuple
 
 from wordle.constants import WORDLE_COLUMNS
-from wordle.word_list_searcher import WordListSearcher
+from wordle.word_list_searcher import (
+    WordListSearcher,
+    _read_words_from_file,
+    _is_valid_guess,
+    _is_valid_clues,
+)
 from wordle.wordle_clues import WordleClues, WordleLetterState
+from wordle.word_set_partitioner import partition, pick_narrowing_guesses_by_letters
 
-
-def _read_words_from_file(wordlist_path: str) -> List[str]:
-    wordlist = []
-    with open(wordlist_path, "r") as wordlist_file:
-        for word in wordlist_file.readlines():
-            word_lower = word.lower().strip()
-            if not _is_valid_guess(word_lower):
-                print(f"Found an invalid word: {word_lower}")
-            wordlist.append(word_lower)
-    return wordlist
-
-
-def _is_valid_guess(user_input: str) -> bool:
-    """ validate the string has the right length and uses valid chars [a-zA-Z] """
-    return len(user_input) == WORDLE_COLUMNS and user_input.isalpha()
-
-
-def _is_valid_clues(user_input: str) -> bool:
-    """ validate the string has the right length and uses valid chars [RrYyGg] """
-    if len(user_input) != WORDLE_COLUMNS:
-        return False
-    for idx in range(len(user_input)):
-        if user_input[idx].lower() not in ("r", "y", "g"):
-            return False
-    return True
 
 def _print_state_with_colors(state: List[Tuple[str, str]]) -> None:
     for guess, clues in state:
-        output_str = ''
+        output_str = ""
         for idx in range(WORDLE_COLUMNS):
-            if clues[idx] == 'r':
+            if clues[idx] == "r":
                 output_str += f"\033[30;100m{guess[idx]}\033[0m"
-            elif clues[idx] == 'y':
+            elif clues[idx] == "y":
                 output_str += f"\033[30;103m{guess[idx]}\033[0m"
-            elif clues[idx] == 'g':
+            elif clues[idx] == "g":
                 output_str += f"\033[30;102m{guess[idx]}\033[0m"
         print(output_str)
 
@@ -135,6 +116,15 @@ def main(guess_wordlist_path, answer_wordlist_path):
         print(f"Found {len(matching_answer_words)} matching answer words:")
         print(", ".join(sorted(matching_answer_words)))
         possible_answers = set(matching_answer_words)
+
+        differential_letters = partition(possible_answers)
+        searching_guesses, num_used_letters = pick_narrowing_guesses_by_letters(
+            differential_letters, guess_wordlist
+        )
+        click.echo(
+            f'"searching" guesses (i.e. use maximal {num_used_letters} of {len(differential_letters)} ambiguous letters from matching answer words:)'
+        )
+        click.echo(", ".join(searching_guesses))
 
         if len(possible_answers) == 1:
             click.echo(
