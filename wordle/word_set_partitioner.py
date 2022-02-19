@@ -90,20 +90,10 @@ def main(guess_wordlist_path, answer_wordlist_path):
     num_answer_words = answer_list_searcher.load_words(answer_wordlist)
     click.echo(f"Done! loaded {num_answer_words} answer words")
 
-    word_patterns_map = generate_similar_word_answer_sets(answer_wordlist)
-    word_patterns_sorted = sorted(
-        [(pattern, len(word_patterns_map[pattern])) for pattern in word_patterns_map],
-        key=lambda kv: kv[1],
-        reverse=True,
-    )
-    click.echo(f"20 of the largest word patterns:")
-    for word_pattern, set_size in word_patterns_sorted[:20]:
-        click.echo(f"{word_pattern} -> {word_patterns_map[word_pattern]}")
-
     # are there any combinations of 3 different letters that aren't covered by a valid guess word?
     letter_combos_map = {}
     for guess_word in guess_wordlist:
-        for guess_letter_combo in itertools.combinations(''.join(set(guess_word)), 3):
+        for guess_letter_combo in itertools.combinations("".join(set(guess_word)), 3):
             guess_letter_combo = tuple(sorted(guess_letter_combo))
             if guess_letter_combo not in letter_combos_map:
                 letter_combos_map[guess_letter_combo] = []
@@ -111,9 +101,9 @@ def main(guess_wordlist_path, answer_wordlist_path):
             if guess_word not in letter_combos_map[guess_letter_combo]:
                 letter_combos_map[guess_letter_combo].append(guess_word)
 
-    click.echo(f'how many keys in the letter_combos_map (should be <= 2600 i.e. 26 choose 3): {len(letter_combos_map.keys())}')
+    # click.echo(f'how many keys in the letter_combos_map (should be <= 2600 i.e. 26 choose 3): {len(letter_combos_map.keys())}')
     uncovered_combos = [
-        "".join(letter_combo)
+        "".join(sorted(letter_combo))
         for letter_combo in itertools.combinations(ALPHABET, 3)
         if letter_combo not in letter_combos_map
     ]
@@ -121,33 +111,92 @@ def main(guess_wordlist_path, answer_wordlist_path):
         f"No valid guess words cover the following {len(uncovered_combos)} (of 2600) three-letter combinations:"
     )
     click.echo(", ".join(uncovered_combos))
-    count = 0
-    for letter_combo in itertools.combinations(ALPHABET, 3):
-        if (
-            letter_combo in letter_combos_map
-            and len(letter_combos_map[letter_combo]) == 1
-        ):
-            count += 1
-            click.echo(
-                f"Only {len(letter_combos_map[letter_combo])} guess word covers the letters {letter_combo}: {letter_combos_map[letter_combo]}"
-            )
-    click.echo(
-        f"total of {count} 3-letter combos that are covered by only 1 guess word each"
-    )
+    # count = 0
+    # for letter_combo in itertools.combinations(ALPHABET, 3):
+    #     if (
+    #         letter_combo in letter_combos_map
+    #         and len(letter_combos_map[letter_combo]) == 1
+    #     ):
+    #         count += 1
+    #         click.echo(
+    #             f"Only {len(letter_combos_map[letter_combo])} guess word covers the letters {letter_combo}: {letter_combos_map[letter_combo]}"
+    #         )
+    # click.echo(
+    #     f"total of {count} 3-letter combos that are covered by only 1 guess word each"
+    # )
 
     # distribution of freq of letter combos among guess words (i.e. how many 3-letter combos are such that exactly N guess words cover that letter combo?)
-    count_distribution = {
-        0: len(uncovered_combos)
-    }  # maps the count of how many guess words cover it to the combo
+    # maps the count of how many guess words cover it to the combo
+    count_distribution = {0: len(uncovered_combos)}
     for letter_combo in letter_combos_map:
         combo_freq = len(letter_combos_map[letter_combo])
         if combo_freq not in count_distribution:
             count_distribution[combo_freq] = 0
         count_distribution[combo_freq] += 1
-    click.echo(
-        f"distribution of counts (of the number of guess words that cover 3-letter combos):"
+    # click.echo(
+    #     f"distribution of counts (of the number of guess words that cover 3-letter combos):"
+    # )
+    # click.echo(count_distribution)
+
+    bucketed_count_distribution = {}
+    for count in range(11):
+        bucketed_count_distribution[str(count)] = count_distribution[count]
+    # bucketed_count_distribution['6-10'] = sum([count_distribution[count] for count in count_distribution if 6 <= count <= 10])
+    bucketed_count_distribution["11-50"] = sum(
+        [count_distribution[count] for count in count_distribution if 11 <= count <= 50]
     )
-    click.echo(count_distribution)
+    bucketed_count_distribution["51-100"] = sum(
+        [
+            count_distribution[count]
+            for count in count_distribution
+            if 51 <= count <= 100
+        ]
+    )
+    bucketed_count_distribution[">100"] = sum(
+        [count_distribution[count] for count in count_distribution if count > 100]
+    )
+    click.echo(
+        f"bucketed distribution of counts (of the number of guess words that cover 3-letter combos):"
+    )
+    click.echo(bucketed_count_distribution)
+
+    # are there any sets of 4+ answer words that only differ in one position?
+    # note that we need 4 different letters: i'm assuming any pair of different letters is covered by at least one 
+    # guess word. And if there are only 3 different letters, then you just need a guess that covers any two of them
+    # to guarantee a win on the following guess.
+    word_patterns_map = generate_similar_word_answer_sets(answer_wordlist)
+    word_patterns_sorted = sorted(
+        [(pattern, len(word_patterns_map[pattern])) for pattern in word_patterns_map],
+        key=lambda kv: kv[1],
+        reverse=True,
+    )
+
+    word_patterns_at_least_4 = {pattern: word_patterns_map[pattern] for pattern in word_patterns_map if len(word_patterns_map[pattern]) >= 4}
+    click.echo(f"all word patterns with 4+ different letters:")
+    for word_pattern in word_patterns_at_least_4:
+        different_idx = word_pattern.index("_")
+        full_matching_words = word_patterns_at_least_4[word_pattern]
+        different_letters_only = [word[different_idx] for word in full_matching_words]
+        word_patterns_at_least_4[word_pattern] = different_letters_only
+        click.echo(f"{word_pattern} -> {word_patterns_at_least_4[word_pattern]}")
+
+    # For word patterns with 4 different letters, are there any valid guess words that can cover at least 3 of the different letters?
+    click.echo(f'for word patterns with exactly 4 different letters, are there any valid guess words that cover at least 3 of them?')
+    for word_pattern, letters in word_patterns_at_least_4.items():
+        if len(letters) != 4:
+            continue
+        can_cover = False
+        covering_combo = None
+        for letter_combo in itertools.combinations(letters, 3):
+            if "".join(sorted(letter_combo)) not in uncovered_combos:
+                can_cover = True
+                covering_combo = "".join(sorted(letter_combo))
+                break
+        if can_cover:
+            guess_letter_combo = tuple(sorted(covering_combo))
+            click.echo(f"{word_pattern} -> {word_patterns_at_least_4[word_pattern]} -> covered by {covering_combo} e.g. {letter_combos_map[guess_letter_combo][0]}")
+        else:
+            click.echo(f"{word_pattern} -> {word_patterns_at_least_4[word_pattern]} -> no 3 letters are coverable by a valid guess!")
 
 
 if __name__ == "__main__":
