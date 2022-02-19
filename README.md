@@ -36,6 +36,10 @@ c:\>python -m venv wordle-venv
 
 $ source wordle-venv/bin/activate
 $ pip install -r requirements.txt
+
+$ python -m wordle.cli.helper
+$ python -m wordle.word_set_partitioner
+# etc.
 ```
 
 ### Testing

@@ -103,12 +103,15 @@ def main(guess_wordlist_path, answer_wordlist_path):
     # are there any combinations of 3 different letters that aren't covered by a valid guess word?
     letter_combos_map = {}
     for guess_word in guess_wordlist:
-        # convert the word to a set of chars to dedupe the combos from words with doubled/multiple letters
-        for guess_letter_combo in itertools.combinations(guess_word, 3):
+        for guess_letter_combo in itertools.combinations(''.join(set(guess_word)), 3):
+            guess_letter_combo = tuple(sorted(guess_letter_combo))
             if guess_letter_combo not in letter_combos_map:
                 letter_combos_map[guess_letter_combo] = []
+            # dedupe the combos from words with doubled/multiple letters
             if guess_word not in letter_combos_map[guess_letter_combo]:
                 letter_combos_map[guess_letter_combo].append(guess_word)
+
+    click.echo(f'how many keys in the letter_combos_map (should be <= 2600 i.e. 26 choose 3): {len(letter_combos_map.keys())}')
     uncovered_combos = [
         "".join(letter_combo)
         for letter_combo in itertools.combinations(ALPHABET, 3)
@@ -118,28 +121,29 @@ def main(guess_wordlist_path, answer_wordlist_path):
         f"No valid guess words cover the following {len(uncovered_combos)} (of 2600) three-letter combinations:"
     )
     click.echo(", ".join(uncovered_combos))
+    count = 0
     for letter_combo in itertools.combinations(ALPHABET, 3):
         if (
             letter_combo in letter_combos_map
             and len(letter_combos_map[letter_combo]) == 1
         ):
+            count += 1
             click.echo(
                 f"Only {len(letter_combos_map[letter_combo])} guess word covers the letters {letter_combo}: {letter_combos_map[letter_combo]}"
             )
-
-    # distribution of freq of letter combos in guess words
-    counts = set(
-        [len(letter_combos_map[letter_combo]) for letter_combo in letter_combos_map]
+    click.echo(
+        f"total of {count} 3-letter combos that are covered by only 1 guess word each"
     )
-    count_distribution = {0: len(uncovered_combos)}
-    for count in counts:
-        count_distribution[count] = len(
-            [
-                letter_combo
-                for letter_combo in letter_combos_map
-                if len(letter_combos_map[letter_combo]) == count
-            ]
-        )
+
+    # distribution of freq of letter combos among guess words (i.e. how many 3-letter combos are such that exactly N guess words cover that letter combo?)
+    count_distribution = {
+        0: len(uncovered_combos)
+    }  # maps the count of how many guess words cover it to the combo
+    for letter_combo in letter_combos_map:
+        combo_freq = len(letter_combos_map[letter_combo])
+        if combo_freq not in count_distribution:
+            count_distribution[combo_freq] = 0
+        count_distribution[combo_freq] += 1
     click.echo(
         f"distribution of counts (of the number of guess words that cover 3-letter combos):"
     )
