@@ -198,6 +198,27 @@ def main(guess_wordlist_path, answer_wordlist_path):
         else:
             click.echo(f"{word_pattern} -> {word_patterns_at_least_4[word_pattern]} -> no 3 letters are coverable by a valid guess!")
 
+    click.echo(f'for word patterns with N>4 different letters, are there any valid guess words that cover at least N-1 of them?')
+    for word_pattern, _ in word_patterns_sorted:
+        letters = word_patterns_map[word_pattern]
+        if len(letters) <= 4:
+            continue
+        can_cover = False
+        covering_combo = None
+        covering_word = None
+        for letter_combo in itertools.combinations(letters, len(letters) - 1):
+            for guess_word in guess_wordlist:
+                if all([(letter in guess_word) for letter in letter_combo]):
+                    can_cover = True
+                    covering_combo = "".join(sorted(letter_combo))
+                    covering_word = guess_word
+                    break
+        if can_cover:
+            guess_letter_combo = tuple(sorted(covering_combo))
+            click.echo(f"{word_pattern} -> {word_patterns_at_least_4[word_pattern]} -> covered by {covering_combo} e.g. {covering_word}")
+        else:
+            click.echo(f"{word_pattern} -> {word_patterns_at_least_4[word_pattern]} -> no {len(letters) - 1} letters are coverable by a valid guess!")
+
 
 if __name__ == "__main__":
     main()
