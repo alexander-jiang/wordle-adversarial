@@ -47,6 +47,43 @@ def test_gray_clues():
     assert not clues.check('foist') # letter O is gray
 
 
+def test_green_and_gray_clues():
+    clues = WordleClues()
+    clues.mark('w', WordleLetterState.GRAY, position=0)
+    clues.mark('a', WordleLetterState.GREEN, position=1)
+    clues.mark('l', WordleLetterState.GRAY, position=2)
+    clues.mark('t', WordleLetterState.YELLOW, position=3)
+    clues.mark('z', WordleLetterState.GRAY, position=4)
+    valid_answer_words = ['tabby', 'taboo', 'tacit', 'taffy', 'taint', 'tango', 'tangy', 'taunt']
+    for valid_answer_word in valid_answer_words:
+        assert clues.check(valid_answer_word)
+    assert not clues.check('farms') # missing T in word
+    assert not clues.check('tipsy') # missing A in word
+
+    clues.mark('t', WordleLetterState.GREEN, position=0)
+    clues.mark('a', WordleLetterState.GREEN, position=1)
+    clues.mark('k', WordleLetterState.GRAY, position=2)
+    clues.mark('e', WordleLetterState.GRAY, position=3)
+    clues.mark('r', WordleLetterState.GRAY, position=4)
+    for valid_answer_word in valid_answer_words:
+        assert clues.check(valid_answer_word)
+    assert not clues.check('farms')
+    assert not clues.check('tipsy')
+
+    clues.mark('t', WordleLetterState.GREEN, position=0)
+    clues.mark('a', WordleLetterState.GREEN, position=1)
+    clues.mark('p', WordleLetterState.GRAY, position=2)
+    clues.mark('a', WordleLetterState.GRAY, position=3)
+    clues.mark('s', WordleLetterState.GRAY, position=4)
+    # even though the letter A is marked as GRAY in 4th position, the letter A 
+    # can still exist be in the word as it's already been marked green
+    for valid_answer_word in valid_answer_words:
+        assert clues.check(valid_answer_word)
+    assert not clues.check('farms')
+    assert not clues.check('tipsy')
+
+
+
 def test_contradicting_green_clues_same_position():
     """Two different letters cannot be marked as green in the same position."""
     clues = WordleClues()

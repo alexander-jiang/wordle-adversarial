@@ -117,14 +117,15 @@ def main(guess_wordlist_path, answer_wordlist_path):
         print(", ".join(sorted(matching_answer_words)))
         possible_answers = set(matching_answer_words)
 
-        differential_letters = partition(possible_answers)
+        ambiguous_letters = partition(possible_answers)
         searching_guesses, num_used_letters = pick_narrowing_guesses_by_letters(
-            differential_letters, guess_wordlist
+            ambiguous_letters, guess_wordlist
         )
-        click.echo(
-            f'"searching" guesses (i.e. use maximal {num_used_letters} of {len(differential_letters)} ambiguous letters from matching answer words:)'
-        )
-        click.echo(", ".join(searching_guesses))
+        if len(ambiguous_letters) > 0:
+            click.echo(
+                f'"searching" guesses (i.e. use maximal {num_used_letters} of {len(ambiguous_letters)} ambiguous letters from matching answer words:)'
+            )
+            click.echo(", ".join(searching_guesses))
 
         if len(possible_answers) == 1:
             click.echo(

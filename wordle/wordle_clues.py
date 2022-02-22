@@ -145,6 +145,7 @@ class WordleClues(WordleCluesABC):
         for gray_letter in self.gray_letters:
             if gray_letter in word:
                 # print(f"gray letter {gray_letter} cannot appear in the word")
+                # TODO - bug: if the letter is marked green in a position, it can be marked gray in another position and still be okay
                 return False
 
         for green_letter, required_positions in self.green_letter_positions.items():

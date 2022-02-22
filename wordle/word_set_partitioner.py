@@ -51,11 +51,26 @@ def pick_narrowing_guesses_by_letters(letters: List[str], guess_wordlist: List[s
     return best_guesses, max_letters_covered
 
 
-def generate_similar_word_answer_sets(answer_wordlist: List[str]):
+def generate_4gram_answer_sets(answer_wordlist: List[str]):
     word_patterns: Dict[str, List[str]] = {}
     for answer_word in answer_wordlist:
         for idx in range(WORDLE_COLUMNS):
             word_pattern_key = answer_word[:idx] + "_" + answer_word[idx + 1 :]
+            if word_pattern_key not in word_patterns:
+                word_patterns[word_pattern_key] = []
+            word_patterns[word_pattern_key].append(answer_word)
+    return word_patterns
+
+def generate_3gram_answer_sets(answer_wordlist: List[str]):
+    word_patterns: Dict[str, List[str]] = {}
+    for answer_word in answer_wordlist:
+        for indexes in itertools.combinations(range(WORDLE_COLUMNS), 3):
+            word_pattern_key = ""
+            for idx in range(WORDLE_COLUMNS):
+                if idx in indexes:
+                    word_pattern_key += answer_word[idx]
+                else:
+                    word_pattern_key += "_"
             if word_pattern_key not in word_patterns:
                 word_patterns[word_pattern_key] = []
             word_patterns[word_pattern_key].append(answer_word)
@@ -164,7 +179,7 @@ def main(guess_wordlist_path, answer_wordlist_path):
     # note that we need 4 different letters: i'm assuming any pair of different letters is covered by at least one 
     # guess word. And if there are only 3 different letters, then you just need a guess that covers any two of them
     # to guarantee a win on the following guess.
-    word_patterns_map = generate_similar_word_answer_sets(answer_wordlist)
+    word_patterns_map = generate_4gram_answer_sets(answer_wordlist)
     word_patterns_sorted = sorted(
         [(pattern, len(word_patterns_map[pattern])) for pattern in word_patterns_map],
         key=lambda kv: kv[1],
@@ -218,6 +233,18 @@ def main(guess_wordlist_path, answer_wordlist_path):
             click.echo(f"{word_pattern} -> {word_patterns_at_least_4[word_pattern]} -> covered by {covering_combo} e.g. {covering_word}")
         else:
             click.echo(f"{word_pattern} -> {word_patterns_at_least_4[word_pattern]} -> no {len(letters) - 1} letters are coverable by a valid guess!")
+
+    # are there any sets of answer words that only differ in two positions?
+    word_3gram_patterns_map = generate_3gram_answer_sets(answer_wordlist)
+    word_3gram_patterns_sorted = sorted(
+        [(pattern, len(word_3gram_patterns_map[pattern])) for pattern in word_3gram_patterns_map],
+        key=lambda kv: kv[1],
+        reverse=True,
+    )
+    click.echo(f"word patterns with 3 shared letters:")
+    for pattern, _ in word_3gram_patterns_sorted[:10]:
+        click.echo(f"{pattern} -> {word_3gram_patterns_map[pattern]}")
+    
 
 
 if __name__ == "__main__":
