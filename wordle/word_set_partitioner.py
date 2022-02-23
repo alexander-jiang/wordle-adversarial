@@ -27,14 +27,16 @@ def partition(words: List[str]):
         if letter_freqs[letter] != 0 and letter_freqs[letter] != len(words):
             differentiating_letters.append(letter)
 
-    print(f"of {len(words)} words, these are ambiguous letter frequencies:")
-    letter_freq_kvs = [
-        (letter, letter_freqs[letter])
-        for letter in letter_freqs
-        if letter_freqs[letter] != 0 and letter_freqs[letter] != len(words)
-    ]
-    sorted_freq_kvs = sorted(letter_freq_kvs, key=lambda kv: kv[1], reverse=True)
-    print(sorted_freq_kvs)
+    if len(words) > 1:
+        print(f"of {len(words)} words, these are ambiguous letter frequencies:")
+        letter_freq_kvs = [
+            (letter, letter_freqs[letter])
+            for letter in letter_freqs
+            if letter_freqs[letter] != 0 and letter_freqs[letter] != len(words)
+        ]
+        sorted_freq_kvs = sorted(letter_freq_kvs, key=lambda kv: kv[1], reverse=True)
+        print(sorted_freq_kvs)
+
     return differentiating_letters
 
 

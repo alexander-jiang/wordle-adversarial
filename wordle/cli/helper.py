@@ -6,6 +6,7 @@ and it returns a list of possible answer words from the list
 import click
 from typing import List, Tuple
 
+from wordle.clue_resolver import _reveal_clues
 from wordle.constants import WORDLE_COLUMNS
 from wordle.word_list_searcher import (
     WordListSearcher,
@@ -106,28 +107,56 @@ def main(guess_wordlist_path, answer_wordlist_path):
             if color == WordleLetterState.GRAY or color == WordleLetterState.YELLOW:
                 helpful_guess_clues.mark(guess[idx], color, idx)
 
-        helpful_guesses = guess_list_searcher.match(helpful_guess_clues)
-        print(
-            f"{len(helpful_guesses)} 'helpful' guesses (i.e. don't use the gray letters {gray_letters} or yellow letters in yellow positions):"
-        )
-        print(", ".join(sorted(helpful_guesses)))
+        # helpful_guesses = guess_list_searcher.match(helpful_guess_clues)
+        # print(
+        #     f"{len(helpful_guesses)} 'helpful' guesses (i.e. don't use the gray letters {gray_letters} or yellow letters in yellow positions):"
+        # )
+        # print(", ".join(sorted(helpful_guesses)))
 
         matching_answer_words = answer_list_searcher.match(actual_clues)
         print(f"Found {len(matching_answer_words)} matching answer words:")
         print(", ".join(sorted(matching_answer_words)))
         possible_answers = set(matching_answer_words)
 
-        ambiguous_letters = partition(possible_answers)
-        searching_guesses, num_used_letters = pick_narrowing_guesses_by_letters(
-            ambiguous_letters, guess_wordlist
-        )
-        if len(ambiguous_letters) > 0:
-            click.echo(
-                f'"searching" guesses (i.e. use maximal {num_used_letters} of {len(ambiguous_letters)} ambiguous letters from matching answer words:)'
-            )
-            click.echo(", ".join(searching_guesses))
+        # ambiguous_letters = partition(possible_answers)
+        # searching_guesses, num_used_letters = pick_narrowing_guesses_by_letters(
+        #     ambiguous_letters, guess_wordlist
+        # )
+        # if len(ambiguous_letters) > 0:
+        #     click.echo(
+        #         f'"searching" guesses (i.e. use maximal {num_used_letters} of {len(ambiguous_letters)} ambiguous letters from matching answer words:)'
+        #     )
+        #     click.echo(", ".join(searching_guesses))
 
-        if len(possible_answers) == 1:
+        # look for forcing guesses: guesses such that, no matter what the returned clues are, there is only
+        # one possible answer word remaining (i.e. a forcing guess guarantees a win on the next guess)
+        if len(possible_answers) > 2 and len(possible_answers) <= 100:
+            # heuristic: if 2 possible answer words left, guessing either of them is a forcing guess
+            # and if there are too many possible answer words left, this search might take too long
+            click.echo("Searching for forcing guesses...")
+            forcing_guess_words = []
+            for guess_candidate in guess_wordlist:
+                clues_to_answers = {}
+                is_forcing_guess = True
+                for possible_answer in possible_answers:
+                    clues = _reveal_clues(guess_candidate, possible_answer)
+                    if clues in clues_to_answers:
+                        is_forcing_guess = False
+                        break
+                    else:
+                        clues_to_answers[clues] = set([guess_candidate,])
+                if is_forcing_guess:
+                    forcing_guess_words.append(guess_candidate)
+            if len(forcing_guess_words) > 0:
+                answer_guesses = [word for word in forcing_guess_words if word in possible_answers]
+                if len(answer_guesses) > 0:
+                    click.echo(f"Found forcing guesses that are also possible answers: {answer_guesses}")
+                    click.echo(f"There are {len(forcing_guess_words)} total forcing guesses")
+                else:
+                    click.echo(f"Found {len(forcing_guess_words)} total forcing guesses: {forcing_guess_words}")
+            else:
+                click.echo("No forcing guesses found")
+        elif len(possible_answers) == 1:
             click.echo(
                 f"There is only one possible answer word left: {list(possible_answers)[0]}"
             )

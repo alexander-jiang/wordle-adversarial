@@ -4,8 +4,10 @@
 - [x] additional feature: only include valid guesses which use yellow letters, but not in the marked-yellow positions,
 - [ ] but maybe we should include guesses which don't use the yellow letters at all
 - [ ] don't include guesses which use yellow letters in positions that already have a green letter
-- [ ] a brute-force solver which tries all guess words and looks for forcing guesses (i.e. guess words such that every possibility is uniquely determined by the returned clues from the guess)
-    - [ ] optimization: only run this brute-force method when there are fewer than X answer words remaining (maybe X = 10?)
+- [x] a brute-force solver which tries all guess words and looks for forcing guesses (i.e. guess words such that every possibility is uniquely determined by the returned clues from the guess)
+    - [x] optimization: only run this brute-force method when there are fewer than X answer words remaining (started with X = 10, then increased to X = 100)
+    - [ ] optimization: only consider potential forcing guess candidates (must use at least one of the ambiguous letters i.e. must provide some additional info to narrow down the possible answer words)
+- [ ] performance analysis: is the clue resolver the bottle-neck? Or should we prune how many guess words are tried?
 
 
 - "ambiguous" letters: of all possible answer words (based on the clues), which letters appear in at least one of the possible answer words, but not in all possible answer words? These letters are "ambiguous" - if you guess a word with an ambiguous letter, you will be sure to narrow down the list of possible answer words (either by eliminating the answer words that use the letter if the letter is marked as gray, or by eliminating the answer words that don't use the letter if the letter is marked as yellow or green). I call this type of guess a "narrowing" guess: you're narrowing down the list of possible answer words by eliminating or confirming certain letters.

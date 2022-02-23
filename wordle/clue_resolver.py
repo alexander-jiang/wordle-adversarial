@@ -7,27 +7,29 @@ def _reveal_clues(guess_word: str, answer_word: str) -> str:
     assert len(guess_word) == len(answer_word)
     assert len(guess_word) == WORDLE_COLUMNS
 
-    clue_str = ""
-    green_letter_pos = {}
+    clues_by_pos = [None for _i in range(WORDLE_COLUMNS)]
+    correct_positions = [False for _i in range(WORDLE_COLUMNS)]
     for idx in range(WORDLE_COLUMNS):
         if answer_word[idx] == guess_word[idx]:
-            guess_letter = guess_word[idx]
-            if guess_letter not in green_letter_pos:
-                green_letter_pos[guess_letter] = set()
-            green_letter_pos[guess_letter].add(idx)
+            clues_by_pos[idx] = 'g'
+            correct_positions[idx] = True
 
     for idx in range(WORDLE_COLUMNS):
+        if clues_by_pos[idx] is not None:
+            continue
         guess_letter = guess_word[idx]
-        if guess_letter in answer_word:
-            if answer_word[idx] == guess_letter:
-                clue_str += 'g'
-            else:
-                # when the letter in the guess word is also used in a different position that matches the answer word,
-                # the letter is marked as green in the correct position, and gray in any incorrect positions.
-                if guess_letter in green_letter_pos and idx not in green_letter_pos[guess_letter]:
-                    clue_str += 'r'
-                else:
-                    clue_str += 'y'
-        else:
-            clue_str += 'r'
-    return clue_str
+        if guess_letter not in answer_word:
+            clues_by_pos[idx] = 'r'
+            continue
+        
+        # the letter is present in the answer word (and not at the current index), 
+        # but the other instance of this letter already accounted for by a correct/green guess?
+        for j in range(WORDLE_COLUMNS):
+            if answer_word[j] == guess_letter and not correct_positions[j]:
+                # there is an occurrence of `guess_letter` that is not accounted for by the correct/green positions
+                clues_by_pos[idx] = 'y'
+                break
+        if clues_by_pos[idx] is None:
+            clues_by_pos[idx] = 'r'
+
+    return "".join(clues_by_pos)
