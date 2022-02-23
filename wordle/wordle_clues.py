@@ -39,7 +39,7 @@ class WordleCluesABC(ABC):
 
 class WordleClues(WordleCluesABC):
     def __init__(self):
-        # set of letters that are marked gray (cannot be in the answer word)
+        # set of letters that are marked gray (cannot be in the answer word, besides in green positions)
         self.gray_letters: MutableSet[str] = set()
 
         # used in check() method:
@@ -142,11 +142,18 @@ class WordleClues(WordleCluesABC):
         # TODO - is it worth converting the word (list of chars) to a set of chars? or a letter count map?
         # to optimize performance of "in word" / "not in word" conditions
 
-        for gray_letter in self.gray_letters:
-            if gray_letter in word:
-                # print(f"gray letter {gray_letter} cannot appear in the word")
-                # TODO - bug: if the letter is marked green in a position, it can be marked gray in another position and still be okay
-                return False
+        for idx in range(WORDLE_COLUMNS):
+            letter = word[idx]
+            if letter in self.gray_letters:
+                if letter not in self.green_letter_positions:
+                    # print(f"gray letter {letter} cannot appear in the word")
+                    return False
+                else:
+                    # if the letter is marked gray and green, then the letter can only appear
+                    # in a green position
+                    green_positions = self.green_letter_positions[letter]
+                    if idx not in green_positions:
+                        return False
 
         for green_letter, required_positions in self.green_letter_positions.items():
             for required_pos in required_positions:

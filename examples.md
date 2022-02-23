@@ -23,7 +23,7 @@ swill - ggggg
 
 
 waltz - rgryr
-miter - ryyrr (only 6 answer words remaining after this clue: faint, habit, paint, saint, tacit, taint: the ambiguous letters are n, b, c, f, h, p, s. An ideal guess would include N and (H, B, T in 1st position, or C) (eliminate or confirm HABIT / TACIT), and also use 3 of the following 4 letters: F, P, S, T (to choose among the words ending with _AINT). I'm not sure any of these exist (i should write a brute-force solver tries all guess words and looks for forcing guesses when there are fewer than X answer words remaining))
+miter - ryyrr (only 6 answer words remaining after this clue: faint, habit, paint, saint, tacit, taint: the ambiguous letters are n, b, c, f, h, p, s. An ideal guess would include N and (H, B, T in 1st position, or C) (eliminate or confirm HABIT / TACIT), and also use 3 of the following 4 letters: F, P, S, T (to choose among the words ending with _AINT). I'm not sure any of these exist (i should write a brute-force solver tries all guess words and looks for forcing guesses when there are fewer than X answer words remaining
 scout - ryrrg (SCOUT was not a forcing guess: the returned clues narrow down to only TACIT, but if the answer word was FAINT, PAINT, or TAINT, the guess of SCOUT would have returned rrrrg i.e. you would require another guess to guarantee the win)
 tacit - ggggg
 
@@ -38,3 +38,13 @@ tacit - ggggg
 heart - yyryy (only 5 answer words remaining after this clue: ether, other, their, three, threw)
 ether - rgggg (there's a bug with the "remaining answer words": the gray clue for the E in the 1st position doesn't change the fact that there is an E somewhere other than in the 2nd position in the word. ETHER was not a forcing guess: the returned clues narrow down to only OTHER, but if the answer word was ????, the guess of ETHER would have returned ????? i.e. you would require another guess to guarantee the win)
 other - ggggg
+
+
+argue - ryrrr
+storm - ryggr (after this clue, THORN is the only possible answer word remaining)
+thorn - ggggg
+
+argue - ryrrr
+rhino - ygryy (after this clue, only 2 answer words remaining: SHORN, THORN)
+shorn - rgggg
+thorn - ggggg
