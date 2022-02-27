@@ -130,9 +130,10 @@ def main(guess_wordlist_path, answer_wordlist_path):
 
         # look for forcing guesses: guesses such that, no matter what the returned clues are, there is only
         # one possible answer word remaining (i.e. a forcing guess guarantees a win on the next guess)
-        if len(possible_answers) > 2 and len(possible_answers) <= 100:
-            # heuristic: if 2 possible answer words left, guessing either of them is a forcing guess
-            # and if there are too many possible answer words left, this search might take too long
+        if len(possible_answers) > 2 and len(possible_answers) <= 243:
+            # if there are only 2 possible answer words left, guessing either of them is a forcing guess
+            # And note that that if there are more than 3^5 = 243 possible answers, by pigeonhole principle, there
+            # is a clue string that is returned by at least two of the possible answer words.
             click.echo("Searching for forcing guesses...")
             forcing_guess_words = []
             for guess_candidate in guess_wordlist:

@@ -48,3 +48,38 @@ feint - ryrry (95 answer words left after this clue, but no forcing guesses)
 trade - ggrrg (only 3 answer words left after this clue: trope, trove, truce. Note: TROPE and TROVE are also forcing guesses)
 pouch - ryrrr
 trove - ggggg
+
+
+unite - rrrrg (155 answer words left after this clue)
+polar - ryyrr (only 6 answer words left after this clue: bloke, close, clove, globe, glove, whole. 12 forcing guesses, one example is CLUES)
+close - rggrg (only 3 answer words left after this clue: bloke, globe, glove. All three answer words are forcing guesses)
+glove - rggrg
+bloke - ggggg
+
+
+years - rrrrr (209 answer words left after this clue)
+odium - ryyrr (only 6 answer words left after this clue: digit, ditch, lipid, livid, vivid, width. 12 forcing guesses, one example is DEVIL)
+dight - ygrrr (only 3 answer words left after this clue: lipid, livid, vivid. All three answer words are forcing guesses)
+lucid - rrrgg
+vivid - ggggg
+
+
+thick - rrgrr (120 answer words left after this clue)
+learn - yrrrr (only 8 answer words left after this clue: blimp, bliss, build, guild, quill, slimy, spill, swill. **But still no forcing guesses!**)
+fouls - rrrgy (only 2 answer words left after this clue: spill, swill)
+sibyl - gyrrg (this doesn't actually narrow down the answers)
+spill - ggggg
+
+
+large - ryrrr (95 answer words left after this clue, no forcing guesses)
+about - yrrrg (only 3 answer words left after this clue: chant, scant, shaft. All three answer words are forcing guesses)
+chain - gggry
+chant - ggggg
+
+large - ryrrr
+antsy - yyyrr (only 3 answer words left after this clue: chant, junta, thank. Note: CHANT and THANK are also forcing guesses)
+plant - rrggg (only 1 answer word left after this clue: CHANT)
+avant - rrggg
+idant - rrggg
+
+

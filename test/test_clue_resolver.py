@@ -75,3 +75,27 @@ def test_guess_ether():
     assert _reveal_clues(guess_word, 'their') == 'yyyyg'
     assert _reveal_clues(guess_word, 'three') == 'yyygy'
     assert _reveal_clues(guess_word, 'threw') == 'ryygy'
+
+def test_answer_bloke():
+    answer_word = 'bloke'
+    assert _reveal_clues('unite', answer_word) == 'rrrrg'
+    assert _reveal_clues('polar', answer_word) == 'ryyrr'
+    assert _reveal_clues('close', answer_word) == 'rggrg'
+    assert _reveal_clues('glove', answer_word) == 'rggrg'
+    assert _reveal_clues('bloke', answer_word) == 'ggggg'
+
+def test_answer_vivid():
+    answer_word = 'vivid'
+    assert _reveal_clues('years', answer_word) == 'rrrrr'
+    assert _reveal_clues('odium', answer_word) == 'ryyrr'
+    assert _reveal_clues('dight', answer_word) == 'ygrrr'
+    assert _reveal_clues('lucid', answer_word) == 'rrrgg'
+    assert _reveal_clues('vivid', answer_word) == 'ggggg'
+
+def test_answer_spill():
+    answer_word = 'spill'
+    assert _reveal_clues('thick', answer_word) == 'rrgrr'
+    assert _reveal_clues('learn', answer_word) == 'yrrrr'
+    assert _reveal_clues('fouls', answer_word) == 'rrrgy'
+    assert _reveal_clues('sibyl', answer_word) == 'gyrrg'
+    assert _reveal_clues('spill', answer_word) == 'ggggg'
