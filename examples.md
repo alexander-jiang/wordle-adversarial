@@ -83,3 +83,10 @@ avant - rrggg
 idant - rrggg
 
 
+arose - ryrrg (19 answer words left after this clue: curve, dirge, eerie, fibre, genre, merge, nerve, puree, purge, revue, rhyme, ridge, rifle, rupee, there, three, verge, verve, where. But still no forcing guesses)
+purge - ygyrg (only RUPEE is left after this clue)
+rupee - ggggg
+
+arose - ryrrg
+lurid - rgyrr (only RUPEE is left after this clue)
+rupee - ggggg

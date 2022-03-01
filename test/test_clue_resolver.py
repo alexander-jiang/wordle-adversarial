@@ -99,3 +99,13 @@ def test_answer_spill():
     assert _reveal_clues('fouls', answer_word) == 'rrrgy'
     assert _reveal_clues('sibyl', answer_word) == 'gyrrg'
     assert _reveal_clues('spill', answer_word) == 'ggggg'
+
+def test_answer_rupee():
+    answer_word = 'rupee'
+    assert _reveal_clues('arose', answer_word) == 'ryrrg'
+    assert _reveal_clues('purge', answer_word) == 'ygyrg'
+    assert _reveal_clues('rupee', answer_word) == 'ggggg'
+
+    assert _reveal_clues('arose', answer_word) == 'ryrrg'
+    assert _reveal_clues('lurid', answer_word) == 'rgyrr'
+    assert _reveal_clues('rupee', answer_word) == 'ggggg'
