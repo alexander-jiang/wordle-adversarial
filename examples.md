@@ -64,14 +64,14 @@ lucid - rrrgg
 vivid - ggggg
 
 
-thick - rrgrr (120 answer words left after this clue)
+thick - rrgrr (120 answer words left after this clue, no forcing guesses. Guessing ARGLE will force a win in 2 more guesses: {'rryrr': ['oundy'], 'rgrrg': ['dumbo'], 'grryy': ['alien'], 'yrrrr': ['daisy'], 'rgyry': ['grief'], 'rgrry': ['defer'], 'rrygr': ['guild'], 'ygrrr': ['briar', 'friar'], 'ryyry': ['reign'], 'rrrgr': ['adaws'], 'yrrgr': ['daily', 'voila'], 'rryyr': ['absey'], 'rgyrr': ['aband'], 'grrrr': ['abeam'], 'grrrg': ['abacs'], 'rrryg': ['acids'], 'ryrry': ['weird'], 'rgrrr': ['abmho'], 'rryry': ['aband'], 'rrrgg': ['exile', 'smile'], 'rgrgr': ['frill', 'drill'], 'ryryr': ['swirl'], 'rrrrg': ['dowps'], 'rrrrr': ['bound'], 'rrryy': ['spiel', 'plied'], 'gyrrg': ['afire'], 'yrygr': ['gaily'], 'yyrrr': ['aband'], 'gryrr': ['aping', 'aging'], 'rryrg': ['guise', 'guide'], 'yrrrg': ['adman'], 'rrrry': ['spied', 'edify'], 'rrryr': ['abysm'], 'rgyrg': ['grime', 'gripe'], 'grygg': ['agile'], 'ryryy': ['flier', 'plier'], 'ryrrg': ['spire'], 'gryyr': ['align'], 'yyrrg': ['raise'], 'rryyg': ['glide'], 'rgygr': ['grill'], 'grryr': ['alibi', 'axial'], 'ggrrg': ['arise'], 'rrygg': ['guile'], 'grryg': ['alive']})
 learn - yrrrr (only 8 answer words left after this clue: blimp, bliss, build, guild, quill, slimy, spill, swill. **But still no forcing guesses!**)
 fouls - rrrgy (only 2 answer words left after this clue: spill, swill)
 sibyl - gyrrg (this doesn't actually narrow down the answers)
 spill - ggggg
 
 
-large - ryrrr (95 answer words left after this clue, no forcing guesses)
+large - ryrrr (95 answer words left after this clue, no forcing guesses. Guessing AHENT will force a win in 2 more guesses: {'grrrg': ['fidos'], 'ygrgy': ['thank'], 'grryr': ['aalii'], 'ygrrr': ['amoks'], 'ygrgr': ['china', 'shank'], 'yrrrr': ['scamp'], 'yrryr': ['ascon'], 'yrryy': ['aalii'], 'yrrrg': ['abaca'], 'yrrry': ['cupid'], 'grrry': ['amity', 'attic'], 'grryy': ['aunty', 'antic'], 'yyrrr': ['adsum'], 'yyrry': ['swath', 'stash'], 'ygryr': ['chain'], 'grrrr': ['aboma'], 'ygrgg': ['chant'], 'ygrrg': ['shaft'], 'yrrgr': ['spank', 'piano'], 'yrrgg': ['scant'], 'yrrgy': ['stand', 'stank'], 'gyrrr': ['aphid', 'awash'], 'yyryr': ['human']})
 about - yrrrg (only 3 answer words left after this clue: chant, scant, shaft. All three answer words are forcing guesses)
 chain - gggry
 chant - ggggg
