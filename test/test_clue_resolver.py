@@ -109,3 +109,18 @@ def test_answer_rupee():
     assert _reveal_clues('arose', answer_word) == 'ryrrg'
     assert _reveal_clues('lurid', answer_word) == 'rgyrr'
     assert _reveal_clues('rupee', answer_word) == 'ggggg'
+
+def test_answer_choke():
+    answer_word = 'choke'
+    assert _reveal_clues('broil', answer_word) == 'rrgrr'
+    assert _reveal_clues('meaty', answer_word) == 'ryrrr'
+    assert _reveal_clues('fudge', answer_word) == 'rrrrg'
+    assert _reveal_clues('chose', answer_word) == 'gggrg'
+    assert _reveal_clues('choke', answer_word) == 'ggggg'
+
+def test_answer_nasty():
+    answer_word = 'nasty'
+    assert _reveal_clues('smart', answer_word) == 'yryry'
+    assert _reveal_clues('tails', answer_word) == 'ygrry'
+    assert _reveal_clues('bench', answer_word) == 'rryrr'
+    assert _reveal_clues('nasty', answer_word) == 'ggggg'

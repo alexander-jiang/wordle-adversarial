@@ -90,3 +90,16 @@ rupee - ggggg
 arose - ryrrg
 lurid - rgyrr (only RUPEE is left after this clue)
 rupee - ggggg
+
+
+broil - rrgrr (77 answer words left after this clue, but no forcing guesses. Guessing CENTS will force a win in 2 more guesses: {'rrrry': ['apeak'], 'rrrrr': ['dogma'], 'rrrgr': ['adobo'], 'rryrr': ['abamp'], 'ryrry': ['chasm'], 'ryyrr': ['aargh'], 'yrryy': ['stock', 'scout'], 'rrrgy': ['sooth', 'sooty'], 'ryrgr': ['quote'], 'rrryy': ['stoop'], 'rrryr': ['adopt', 'afoot'], 'ryyry': ['shone', 'noose'], 'ryrrr': ['abbey'], 'yrrry': ['achoo'], 'rryyy': ['stony', 'snout'], 'gyrrr': ['choke'], 'rryry': ['adown'], 'ryryy': ['abask'], 'gyrry': ['chose'], 'yyyry': ['scone'], 'yyrrr': ['epoch'], 'yrrrr': ['pooch'], 'yryrr': ['knock'], 'yyrry': ['scope'], 'ryrgy': ['smote'], 'grrrr': ['chock'], 'ryyyr': ['atone'], 'ryyyy': ['stone'], 'rryyr': ['thong']})
+meaty - ryrrr (only 14 answer words left after this clue. The only forcing guess is SYNCH)
+fudge - rrrrg (only 12 answer words left after this clue. The only forcing guess is SYNCH)
+chose - gggrg (only CHOKE is left after this clue)
+choke - ggggg
+
+
+smart - yryry (only 13 answer words left after this clue, but no forcing guesses. Guessing ABACA will force a win in 2 more guesses: {'yryry': ['thesp'], 'rrrrg': ['vista'], 'yryyy': ['caste'], 'yryrg': ['pasta'], 'yyyry': ['baste']})
+tails - ygrry (only 10 answer words left after this clue: baste, caste, haste, hasty, nasty, pasta, paste, pasty, patsy, waste, but no forcing guesses. Guessing AAHED will force a win in 2 more guesses: {'rgyrr': ['hasty'], 'rgryr': ['becap'], 'rgrrr': ['actin'], 'ygrrr': ['pasta'], 'rgyyr': ['haste']})
+bench - rryrr (only NASTY is left after this clue)
+nasty - ggggg
