@@ -5,13 +5,13 @@ letter-position frequency, etc.
 """
 import click
 import itertools
-from typing import List, Dict
+from typing import List, Dict, MutableSet, Tuple
 
 from wordle.word_list_searcher import WordListSearcher, _read_words_from_file
 from wordle.constants import WORDLE_COLUMNS, ALPHABET
 
 
-def partition(words: List[str]):
+def partition(words: List[str], print_debug: bool = True) -> List[str]:
     letter_freqs = {}
     for letter_ord in range(ord("a"), ord("z") + 1):
         letter = chr(letter_ord)
@@ -27,7 +27,7 @@ def partition(words: List[str]):
         if letter_freqs[letter] != 0 and letter_freqs[letter] != len(words):
             differentiating_letters.append(letter)
 
-    if len(words) > 1:
+    if print_debug and len(words) > 1:
         print(f"of {len(words)} words, these are ambiguous letter frequencies:")
         letter_freq_kvs = [
             (letter, letter_freqs[letter])
@@ -38,6 +38,50 @@ def partition(words: List[str]):
         print(sorted_freq_kvs)
 
     return differentiating_letters
+
+
+# of any two possible answer words, a forcing guess must be able to differentiate them: build a set of letters such that 
+# a forcing guess must contain at least one of the returned letters
+# Note: just checking letters is too strict: what if two words share the same letters but in different positions? then a guess could
+# differentiate between them if it checked the letters in specific positions
+def required_letter_positions_for_forcing_guess(answer_words: List[str], print_debug: bool = True) -> Dict[Tuple[str, str], Tuple[MutableSet[str], MutableSet[Tuple[int, str]]]]:
+    required_letter_positions = {}
+    for word1, word2 in itertools.combinations(answer_words, 2):
+        ambiguous_letter_positions = set()
+        ambiguous_letters = set()
+
+        for i in range(len(word1)):
+            letter1 = word1[i]
+            letter2 = word2[i]
+            if letter1 == letter2:
+                continue # no way to distinguish
+            
+            # can always distinguish by guessing letter1 in this position or letter2 in this position
+            ambiguous_letter_positions.update([(letter1, i), (letter2, i)])
+
+            if letter1 not in word2:
+                # can distinguish by guessing letter1 in any position
+                ambiguous_letter_positions.update([(letter1, i) for i in range(len(word1))])
+                ambiguous_letters.add(letter1)
+            else:
+                # TODO if the letter is present in word2 (not at index i), can distinguish by guessing the letter at the position in word2, only if word1 doesn't have the same letter at that position
+                for j in range(len(word2)):
+                    if j != i and word2[j] != letter1:
+                        ambiguous_letter_positions.add((letter1, j))
+
+            if letter2 not in word1:
+                # can distinguish by guessing letter2 in any position
+                ambiguous_letter_positions.update([(letter2, i) for i in range(len(word2))])
+                ambiguous_letters.add(letter2)
+            else:
+                # TODO if the letter is present in word1, can distinguish by guessing the letter at the position in word1, only if word2 doesn't have the same letter at that position
+                for j in range(len(word1)):
+                    if j != i and word1[j] == letter2 and word2[j] != letter2:
+                        ambiguous_letter_positions.add((letter2, j))
+
+        required_letter_positions[(word1, word2)] = ambiguous_letters, ambiguous_letter_positions
+
+    return required_letter_positions
 
 
 def pick_narrowing_guesses_by_letters(letters: List[str], guess_wordlist: List[str]):

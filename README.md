@@ -6,7 +6,8 @@
     - [ ] don't include guesses which use yellow letters in positions that already have a green letter
 - [x] a brute-force solver which tries all guess words and looks for forcing guesses (i.e. guess words such that every possibility is uniquely determined by the returned clues from the guess)
     - [x] optimization: only run this brute-force method when there are fewer than X answer words remaining (started with X = 10, then increased to X = 100)
-    - [ ] optimization: only consider potential forcing guess candidates (must use at least one of the ambiguous letters i.e. must provide some additional info to narrow down the possible answer words)
+    ~- [ ] optimization: only consider potential forcing guess candidates (must use at least one of the ambiguous letters i.e. must provide some additional info to narrow down the possible answer words)~ (turns out this doesn't help)
+    - [ ] how can most guess candidates be easily eliminated? Look at pairs of possible answers: a forcing guess must be able to distinguish between them: i.e. the guess candidate must contain at least one of the ambiguous letters between each pair of answer words.
 - [ ] performance analysis: is the clue resolver the bottle-neck? Or should we prune how many guess words are tried?
 
 

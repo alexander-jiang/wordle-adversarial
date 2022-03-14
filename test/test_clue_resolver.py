@@ -1,4 +1,5 @@
-from wordle.clue_resolver import _reveal_clues
+from wordle.clue_resolver import _reveal_clues, find_forcing_guesses
+from wordle.word_list_searcher import _read_words_from_file
 import pytest
 
 def test_answer_caulk():
@@ -124,3 +125,66 @@ def test_answer_nasty():
     assert _reveal_clues('tails', answer_word) == 'ygrry'
     assert _reveal_clues('bench', answer_word) == 'rryrr'
     assert _reveal_clues('nasty', answer_word) == 'ggggg'
+
+def test_forcing_guess():
+    guess_wordlist_path = '3b1b-data/allowed_words.txt'
+    guess_wordlist = _read_words_from_file(guess_wordlist_path)
+
+    # Can distinguish between CHILL and CHILI, or SKILL and SWILL
+    answer_words = ['chili', 'chill', 'icily', 'skill', 'swill']
+    assert set(['cowal', 'crawl', 'kahal', 'scowl', 'shawl', 'swayl', 'thowl', 'wheal', 'wheel', 'whirl', 'whorl']) == set(find_forcing_guesses(
+        guess_wordlist,
+        possible_answers=answer_words,
+        return_early=False,
+        print_debug=False,
+    ))
+
+    answer_words = ['shade', 'shake', 'shame', 'shape', 'shave']
+    assert len(find_forcing_guesses(
+        guess_wordlist,
+        possible_answers=answer_words,
+        return_early=False,
+        print_debug=False,
+    )) == 0
+
+    answer_words = ['faint', 'habit', 'paint', 'saint', 'tacit', 'taint']
+    assert set(['tapis', 'tipis', 'topis', 'trips']) == set(find_forcing_guesses(
+        guess_wordlist,
+        possible_answers=answer_words,
+        return_early=False,
+        print_debug=False,
+    ))
+
+    answer_words = ['bloke', 'close', 'clove', 'globe', 'glove', 'whole']
+    assert 'clubs' in find_forcing_guesses(
+        guess_wordlist,
+        possible_answers=answer_words,
+        return_early=False,
+        print_debug=False,
+    )
+
+    answer_words = ['digit', 'ditch', 'lipid', 'livid', 'vivid', 'width']
+    assert 'devil' in find_forcing_guesses(
+        guess_wordlist,
+        possible_answers=answer_words,
+        return_early=False,
+        print_debug=False,
+    )
+
+    answer_words = ['choke', 'chose', 'epoch', 'evoke', 'goose', 'noose', 'ozone', 'phone', 'scone', 'scope', 'shone', 'shove', 'spoke', 'whose']
+    assert ['synch'] == find_forcing_guesses(
+        guess_wordlist,
+        possible_answers=answer_words,
+        return_early=False,
+        print_debug=False,
+    )
+
+    # Can distinguish between THREE and THREW by guessing an E outside of the 4th position
+    answer_words = ['ether', 'other', 'their', 'three', 'threw']
+    forcing_guesses = find_forcing_guesses(
+        guess_wordlist,
+        possible_answers=answer_words,
+        return_early=False,
+        print_debug=True,
+    )
+    assert 'ether' in forcing_guesses and 'three' in forcing_guesses
