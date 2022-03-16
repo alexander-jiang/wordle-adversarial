@@ -46,7 +46,8 @@ def _print_state_with_colors(state: List[Tuple[str, str]]) -> None:
     default="3b1b-data/possible_words.txt",
     help="path to a text file where each valid answer word is on its own line",
 )
-def main(guess_wordlist_path, answer_wordlist_path):
+@click.option("--win-in-2", "-w", is_flag=True, default=False)
+def main(guess_wordlist_path, answer_wordlist_path, win_in_2):
     click.echo(f"Loading guess word list from {guess_wordlist_path}...")
     guess_wordlist = _read_words_from_file(guess_wordlist_path)
     guess_list_searcher = WordListSearcher()
@@ -132,7 +133,7 @@ def main(guess_wordlist_path, answer_wordlist_path):
         # one possible answer word remaining (i.e. a forcing guess guarantees a win on the next guess)
         if len(possible_answers) > 2:
             forcing_guesses = find_forcing_guesses(guess_wordlist, possible_answers)
-            if len(forcing_guesses) == 0:
+            if win_in_2 and len(forcing_guesses) == 0:
                 find_win_in_2_guesses(guess_wordlist, possible_answers, return_early=True)
         elif len(possible_answers) == 1:
             click.echo(

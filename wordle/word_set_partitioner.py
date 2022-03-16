@@ -64,20 +64,36 @@ def required_letter_positions_for_forcing_guess(answer_words: List[str], print_d
                 ambiguous_letter_positions.update([(letter1, i) for i in range(len(word1))])
                 ambiguous_letters.add(letter1)
             else:
-                # TODO if the letter is present in word2 (not at index i), can distinguish by guessing the letter at the position in word2, only if word1 doesn't have the same letter at that position
+                # if word2's occurrences of letter1 don't all match up with word1's occurrences of letter1, we 
+                # can distinguish by guessing letter1 at any index (where word1 and word2 don't both have letter1) 
+                covered = True
                 for j in range(len(word2)):
-                    if j != i and word2[j] != letter1:
-                        ambiguous_letter_positions.add((letter1, j))
+                    if word2[j] == letter1 and word1[j] != letter1:
+                        covered = False
+                        break
+                if covered:
+                    for j in range(len(word2)):
+                        if word2[j] != letter1 or word1[j] != letter1:
+                            ambiguous_letter_positions.add((letter1, j))
+                # otherwise, you can't distinguish by guessing letter1 (except at index i, which is already accounted for above)
 
             if letter2 not in word1:
                 # can distinguish by guessing letter2 in any position
                 ambiguous_letter_positions.update([(letter2, i) for i in range(len(word2))])
                 ambiguous_letters.add(letter2)
             else:
-                # TODO if the letter is present in word1, can distinguish by guessing the letter at the position in word1, only if word2 doesn't have the same letter at that position
+                # if word1's occurrences of letter2 don't all match up with word2's occurrences of letter2, we 
+                # can distinguish by guessing letter2 at any index (where word2 and word1 don't both have letter2) 
+                covered = True
                 for j in range(len(word1)):
-                    if j != i and word1[j] == letter2 and word2[j] != letter2:
-                        ambiguous_letter_positions.add((letter2, j))
+                    if word1[j] == letter2 and word2[j] != letter2:
+                        covered = False
+                        break
+                if covered:
+                    for j in range(len(word1)):
+                        if word1[j] != letter2 or word2[j] != letter2:
+                            ambiguous_letter_positions.add((letter2, j))
+                # otherwise, you can't distinguish by guessing letter2 (except at index i, which is already accounted for above)
 
         required_letter_positions[(word1, word2)] = ambiguous_letters, ambiguous_letter_positions
 

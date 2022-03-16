@@ -26,8 +26,8 @@ def _reveal_clues(guess_word: str, answer_word: str) -> str:
         if guess_letter not in answer_word:
             clues_by_pos[idx] = 'r'
             continue
-        
-        # the letter is present in the answer word (and not at the current index), 
+
+        # the letter is present in the answer word (and not at the current index),
         # but the other instance of this letter already accounted for by a correct/green guess?
         for j in range(WORDLE_COLUMNS):
             if answer_word[j] == guess_letter and not correct_positions[j]:
@@ -73,8 +73,8 @@ def find_forcing_guesses(
         should_skip = False
         for word_pair, (letter_set, letter_pos_set) in required_letter_pos_sets.items():
             if candidate_letter_set.isdisjoint(letter_set) and candidate_letter_pos.isdisjoint(letter_pos_set):
-                if print_debug and guess_candidate == 'ether':
-                    print(f"skipping candidate {guess_candidate}: must have a letter-position from the set {letter_pos_set} to distinguish {word_pair}")
+                # if print_debug:
+                #     print(f"skipping candidate {guess_candidate}: must have a letter-position from the set {letter_pos_set} to distinguish {word_pair}")
                 should_skip = True
                 break
         if should_skip:

@@ -185,6 +185,6 @@ def test_forcing_guess():
         guess_wordlist,
         possible_answers=answer_words,
         return_early=False,
-        print_debug=True,
+        print_debug=False,
     )
     assert 'ether' in forcing_guesses and 'three' in forcing_guesses

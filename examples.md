@@ -72,7 +72,7 @@ about - yrrrg (only 3 answer words left after this clue: chant, scant, shaft. Al
 chain - gggry
 chant - ggggg
 
-large - ryrrr
+large - ryrrr (as above)
 antsy - yyyrr (only 3 answer words left after this clue: chant, junta, thank. Note: CHANT and THANK are also forcing guesses)
 plant - rrggg (only 1 answer word left after this clue: CHANT)
 avant - rrggg
@@ -82,7 +82,7 @@ arose - ryrrg (19 answer words left after this clue: curve, dirge, eerie, fibre,
 purge - ygyrg (only RUPEE is left after this clue)
 rupee - ggggg
 
-arose - ryrrg
+arose - ryrrg (as above)
 lurid - rgyrr (only RUPEE is left after this clue)
 rupee - ggggg
 
@@ -120,3 +120,9 @@ lapse - ggggg
 grape - rrrrr (329 answer words left after this clue, no forcing guesses by pigeonhole principle.)
 clout - yrygr
 focus - ggggg
+
+
+paint - ryrry (62 answer words left after this clue. Guessing ARETE forces a win in 2 more guesses: {'yrryr': ['focal'], 'yrryg': ['galvo'], 'yrrgr': ['abacs'], 'yyryr': ['abaya'], 'yrrgg': ['alkos'], 'yrygg': ['elate'], 'ygryr': ['abacs'], 'gyrgr': ['aorta'], 'yryyy': ['abaft'], 'yrgyr': ['dwalm'], 'grrgg': ['aargh'], 'gyryr': ['actor', 'altar'], 'yyryg': ['stare'], 'yyyyy': ['abray'], 'ygrgg': ['crate', 'grate'], 'ggryr': ['artsy'], 'ygryg': ['trade', 'trace'], 'yrygy': ['aahed'], 'ygrgr': ['wrath'], 'yrggr': ['theta'], 'gyyyy': ['after', 'alter'], 'grryr': ['atoll'], 'yryyg': ['tease'], 'yggyr': ['tread']})
+wrath - rrgyr (9 answer words left after this clue: stack, staff, stage, stake, stale, stalk, stall, stave, tease. 2 forcing guesses: kevel, kevil)
+stale - yygrg (only TEASE left after this clue)
+tease - ggggg
