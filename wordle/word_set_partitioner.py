@@ -5,7 +5,7 @@ letter-position frequency, etc.
 """
 import click
 import itertools
-from typing import List, Dict, MutableSet, Tuple
+from typing import List, Dict, MutableSet, Tuple, Optional
 
 from wordle.word_list_searcher import WordListSearcher, _read_words_from_file
 from wordle.constants import WORDLE_COLUMNS, ALPHABET
@@ -40,7 +40,7 @@ def partition(words: List[str], print_debug: bool = True) -> List[str]:
     return differentiating_letters
 
 
-# of any two possible answer words, a forcing guess must be able to differentiate them: build a set of letters such that 
+# of any two possible answer words, a forcing guess must be able to differentiate them: build a set of letters such that
 # a forcing guess must contain at least one of the returned letters
 # Note: just checking letters is too strict: what if two words share the same letters but in different positions? then a guess could
 # differentiate between them if it checked the letters in specific positions
@@ -55,7 +55,7 @@ def required_letter_positions_for_forcing_guess(answer_words: List[str], print_d
             letter2 = word2[i]
             if letter1 == letter2:
                 continue # no way to distinguish
-            
+
             # can always distinguish by guessing letter1 in this position or letter2 in this position
             ambiguous_letter_positions.update([(letter1, i), (letter2, i)])
 
@@ -64,8 +64,8 @@ def required_letter_positions_for_forcing_guess(answer_words: List[str], print_d
                 ambiguous_letter_positions.update([(letter1, i) for i in range(len(word1))])
                 ambiguous_letters.add(letter1)
             else:
-                # if word2's occurrences of letter1 don't all match up with word1's occurrences of letter1, we 
-                # can distinguish by guessing letter1 at any index (where word1 and word2 don't both have letter1) 
+                # if word2's occurrences of letter1 don't all match up with word1's occurrences of letter1, we
+                # can distinguish by guessing letter1 at any index (where word1 and word2 don't both have letter1)
                 covered = True
                 for j in range(len(word2)):
                     if word2[j] == letter1 and word1[j] != letter1:
@@ -82,8 +82,8 @@ def required_letter_positions_for_forcing_guess(answer_words: List[str], print_d
                 ambiguous_letter_positions.update([(letter2, i) for i in range(len(word2))])
                 ambiguous_letters.add(letter2)
             else:
-                # if word1's occurrences of letter2 don't all match up with word2's occurrences of letter2, we 
-                # can distinguish by guessing letter2 at any index (where word2 and word1 don't both have letter2) 
+                # if word1's occurrences of letter2 don't all match up with word2's occurrences of letter2, we
+                # can distinguish by guessing letter2 at any index (where word2 and word1 don't both have letter2)
                 covered = True
                 for j in range(len(word1)):
                     if word1[j] == letter2 and word2[j] != letter2:
@@ -98,6 +98,107 @@ def required_letter_positions_for_forcing_guess(answer_words: List[str], print_d
         required_letter_positions[(word1, word2)] = ambiguous_letters, ambiguous_letter_positions
 
     return required_letter_positions
+
+def _word_to_letter_pos_map(word: str) -> Dict[str, MutableSet[int]]:
+    # TODO update this to return a matrix: rows = letters, columns = positions
+    letter_pos_map = {}
+    for idx in range(len(word)):
+        letter = word[idx]
+        if letter not in letter_pos_map:
+            letter_pos_map[letter] = set()
+        letter_pos_map[letter].add(idx)
+    return letter_pos_map
+
+# goal: given only a list of possible answer words, build a list of necessary conditions that
+# a potential guess must fulfill to be possibly a forcing guess
+def forcing_guess_requirements(answer_words: List[str], guess_letters: Optional[List[Optional[str]]] = None):
+    # for each letter, which positions must it be in, in the guess word in order to even possibly
+    # be a forcing guess?
+    answer_letter_pos_maps = [_word_to_letter_pos_map(word) for word in answer_words]
+    for letter in ALPHABET:
+        pos_freq = [0 for _ in range(WORDLE_COLUMNS)]
+        for letter_pos_map in answer_letter_pos_maps:
+            if letter in letter_pos_map:
+                for idx in letter_pos_map[letter]:
+                    pos_freq[idx] += 1
+        if not any(pos_freq):
+            continue
+            # letter doesn't appear in any of the possible answer words, so including this letter isn't necessary for a forcing guess
+        print(f'letter {letter} appears in answer word positions with this frequency {pos_freq}')
+
+    # if total of pos_freq is 0, then guessing the letter in any position isn't helpful (gains 0 "points")
+    # if total of pos_freq is 1, then guessing the letter in any position helps
+    #  by either confirming or eliminating the possible answer
+    #  word that uses the letter in that position (gains 1 point = 1 word)
+    # if total of pos_freq is >1, then guessing the letter in position X earns the minimum of
+    #  (number of occurrences of the letter at position X) and (number of occurrences of the
+    #  letter at all other positions besides X)
+    #  -> because number of words that can be guaranteed eliminated or confirmed is the adversarial case:
+    #     either the letter is in the true answer word at X (which eliminates all occurrences of the )
+    # TODO what about letters that appear multiple times in an answer word?
+    def scoring_func(guess_candidate: str) -> int:
+        pass
+
+"""
+letter e appears in answer word positions with this frequency [1, 0, 1, 4, 1]
+letter h appears in answer word positions with this frequency [0, 3, 2, 0, 0]
+letter i appears in answer word positions with this frequency [0, 0, 0, 1, 0]
+letter o appears in answer word positions with this frequency [1, 0, 0, 0, 0]
+letter r appears in answer word positions with this frequency [0, 0, 2, 0, 3]
+letter t appears in answer word positions with this frequency [3, 2, 0, 0, 0]
+letter w appears in answer word positions with this frequency [0, 0, 0, 0, 1]
+"""
+
+
+def can_partition_with_guess(answer_words: List[str], guess_letters: Optional[List[Optional[str]]] = None) -> bool:
+    if guess_letters is None:
+        guess_letters = [None for _ in range(WORDLE_COLUMNS)]
+
+    print(f'partitioning answer words using guess_letters: {guess_letters}')
+    print(answer_words)
+    for position in range(WORDLE_COLUMNS):
+        if guess_letters[position] is not None:
+            continue # already have a letter in this position
+
+        for letter in ALPHABET:
+            # if guess contains letter at this position, how does that split the bucket of answer words
+            # (based on the clue returned for this position)?
+            new_guess_letters = guess_letters.copy()
+            new_guess_letters[position] = letter
+            print(f'trying letter {letter} in index {position}')
+
+            # which answer words would remain if this clue was green/yellow/gray?
+            green_clue_answer_words = []
+            yellow_clue_answer_words = []
+            gray_clue_answer_words = []
+            for answer_word in answer_words:
+                if answer_word[position] == letter:
+                    green_clue_answer_words.append(answer_word)
+                elif letter in answer_word:
+                    yellow_clue_answer_words.append(answer_word)
+                    # TODO this is tricky if the letter appears multiple times in the word
+                else:
+                    gray_clue_answer_words.append(answer_word)
+            if (
+                len(gray_clue_answer_words) == len(answer_words)
+                or len(yellow_clue_answer_words) == len(answer_words)
+                or len(green_clue_answer_words) == len(answer_words)
+            ):
+                continue # all words would return the same clue for this letter, try the next one
+
+            able_to_partition = True
+            if len(green_clue_answer_words) > 2:
+                able_to_partition_green = can_partition_with_guess(green_clue_answer_words, new_guess_letters)
+                able_to_partition = able_to_partition and able_to_partition_green
+            if len(yellow_clue_answer_words) > 2:
+                able_to_partition_yellow = can_partition_with_guess(yellow_clue_answer_words, new_guess_letters)
+                able_to_partition = able_to_partition and able_to_partition_yellow
+            if len(gray_clue_answer_words) > 2:
+                able_to_partition_gray = can_partition_with_guess(gray_clue_answer_words, new_guess_letters)
+                able_to_partition = able_to_partition and able_to_partition_gray
+            if able_to_partition:
+                return able_to_partition
+    return False
 
 
 def pick_narrowing_guesses_by_letters(letters: List[str], guess_wordlist: List[str]):
@@ -238,7 +339,7 @@ def main(guess_wordlist_path, answer_wordlist_path):
     click.echo(bucketed_count_distribution)
 
     # are there any sets of 4+ answer words that only differ in one position?
-    # note that we need 4 different letters: i'm assuming any pair of different letters is covered by at least one 
+    # note that we need 4 different letters: i'm assuming any pair of different letters is covered by at least one
     # guess word. And if there are only 3 different letters, then you just need a guess that covers any two of them
     # to guarantee a win on the following guess.
     word_patterns_map = generate_4gram_answer_sets(answer_wordlist)
@@ -306,7 +407,7 @@ def main(guess_wordlist_path, answer_wordlist_path):
     click.echo(f"word patterns with 3 shared letters:")
     for pattern, _ in word_3gram_patterns_sorted[:10]:
         click.echo(f"{pattern} -> {word_3gram_patterns_map[pattern]}")
-    
+
 
 
 if __name__ == "__main__":

@@ -5,7 +5,6 @@ from typing import List
 from tqdm import tqdm
 
 from wordle.constants import WORDLE_COLUMNS
-from wordle.word_set_partitioner import required_letter_positions_for_forcing_guess
 
 def _reveal_clues(guess_word: str, answer_word: str) -> str:
     # TODO does commenting out these assertions improve performance?
@@ -39,6 +38,37 @@ def _reveal_clues(guess_word: str, answer_word: str) -> str:
 
     return "".join(clues_by_pos)
 
+
+def check_forcing_guess_naive(guess_candidate: str, possible_answers: List[str]) -> bool:
+    clues_to_answers = {}
+    is_forcing_guess = True
+    for possible_answer in possible_answers:
+        clues = _reveal_clues(guess_candidate, possible_answer)
+        if clues in clues_to_answers:
+            is_forcing_guess = False
+            # if print_debug:
+            #     print(f"candidate {guess_candidate} not a forcing guess: {clues_to_answers[clues]} and {possible_answer} are both returned by clue {clues}")
+            break
+        else:
+            clues_to_answers[clues] = set([possible_answer,])
+    return is_forcing_guess
+
+
+def check_forcing_guess_fast(guess_candidate: str, possible_answers: List[str]) -> bool:
+    clues_to_answers = {}
+    is_forcing_guess = True
+    for possible_answer in possible_answers:
+        clues = _reveal_clues(guess_candidate, possible_answer)
+        if clues in clues_to_answers:
+            is_forcing_guess = False
+            # if print_debug:
+            #     print(f"candidate {guess_candidate} not a forcing guess: {clues_to_answers[clues]} and {possible_answer} are both returned by clue {clues}")
+            break
+        else:
+            clues_to_answers[clues] = set([possible_answer,])
+    return is_forcing_guess
+
+
 def find_forcing_guesses(
     guess_wordlist: List[str],
     possible_answers: List[str],
@@ -65,32 +95,10 @@ def find_forcing_guesses(
     if print_debug:
         print("Searching for forcing guesses...")
 
-    required_letter_pos_sets = required_letter_positions_for_forcing_guess(possible_answers, print_debug=False)
     forcing_guess_words = []
     for guess_candidate in guess_wordlist:
-        candidate_letter_set = set(guess_candidate)
-        candidate_letter_pos = set([(guess_candidate[i], i) for i in range(len(guess_candidate))])
-        should_skip = False
-        for word_pair, (letter_set, letter_pos_set) in required_letter_pos_sets.items():
-            if candidate_letter_set.isdisjoint(letter_set) and candidate_letter_pos.isdisjoint(letter_pos_set):
-                # if print_debug:
-                #     print(f"skipping candidate {guess_candidate}: must have a letter-position from the set {letter_pos_set} to distinguish {word_pair}")
-                should_skip = True
-                break
-        if should_skip:
-            continue
 
-        clues_to_answers = {}
-        is_forcing_guess = True
-        for possible_answer in possible_answers:
-            clues = _reveal_clues(guess_candidate, possible_answer)
-            if clues in clues_to_answers:
-                is_forcing_guess = False
-                # if print_debug:
-                #     print(f"candidate {guess_candidate} not a forcing guess: {clues_to_answers[clues]} and {possible_answer} are both returned by clue {clues}")
-                break
-            else:
-                clues_to_answers[clues] = set([possible_answer,])
+        is_forcing_guess = check_forcing_guess_naive(guess_candidate, possible_answers)
         if is_forcing_guess:
             forcing_guess_words.append(guess_candidate)
             if return_early:

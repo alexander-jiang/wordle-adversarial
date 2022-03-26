@@ -121,8 +121,35 @@ grape - rrrrr (329 answer words left after this clue, no forcing guesses by pige
 clout - yrygr
 focus - ggggg
 
-
 paint - ryrry (62 answer words left after this clue. Guessing ARETE forces a win in 2 more guesses: {'yrryr': ['focal'], 'yrryg': ['galvo'], 'yrrgr': ['abacs'], 'yyryr': ['abaya'], 'yrrgg': ['alkos'], 'yrygg': ['elate'], 'ygryr': ['abacs'], 'gyrgr': ['aorta'], 'yryyy': ['abaft'], 'yrgyr': ['dwalm'], 'grrgg': ['aargh'], 'gyryr': ['actor', 'altar'], 'yyryg': ['stare'], 'yyyyy': ['abray'], 'ygrgg': ['crate', 'grate'], 'ggryr': ['artsy'], 'ygryg': ['trade', 'trace'], 'yrygy': ['aahed'], 'ygrgr': ['wrath'], 'yrggr': ['theta'], 'gyyyy': ['after', 'alter'], 'grryr': ['atoll'], 'yryyg': ['tease'], 'yggyr': ['tread']})
 wrath - rrgyr (9 answer words left after this clue: stack, staff, stage, stake, stale, stalk, stall, stave, tease. 2 forcing guesses: kevel, kevil)
 stale - yygrg (only TEASE left after this clue)
 tease - ggggg
+
+resin - ryyrr (93 answer words left after this clue, no forcing guesses)
+pales - rgryy (3 answer words left after this clue: cause, sauce, saute. All 3 are forcing guesses)
+cause - rggyg
+saute - ggggg
+
+dicey - rrrrr (371 answer words left after this clue, no forcing guesses by pigeonhole principle.)
+grout - rryrr (13 answer words left after this clue: allow, banjo, bosom, koala, lasso, mambo, mason, offal, polka, salon, salvo, woman, zonal. 6 forcing guesses: anlas, noles, nolls, nolos, solan, solon)
+loafs - yyyrr (only ALLOW left after this clue)
+ablow - grggg
+allow - ggggg
+
+plain - rrrry (120 answer words left after this clue, no forcing guesses)
+round - grryr (only RENEW left after this clue)
+renew - ggggg
+
+adore - rrryy (116 answer words left after this clue, no forcing guesses)
+liter - ryyyg (only THEIR left after this clue)
+their - ggggg
+
+trade - rrrrr (269 answer words left after this clue, no forcing guesses by pigeonhole principle.)
+lousy - yyrgr (3 answer words left after this clue: floss, gloss, slosh. GLOSS and FLOSS are forcing guesses, there are 1048 total forcing guesses)
+gloss - rgggy
+slosh - ggggg
+
+triad - ryrrr (164 answer words left after this clue, no forcing guesses)
+rouge - yrygg (2 answer words left after this clue: purge, surge)
+purge - ggggg

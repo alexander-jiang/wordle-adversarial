@@ -8,6 +8,8 @@
     - [x] optimization: only run this brute-force method when there are fewer than X answer words remaining (started with X = 10, then increased to X = 100)
     ~- [ ] optimization: only consider potential forcing guess candidates (must use at least one of the ambiguous letters i.e. must provide some additional info to narrow down the possible answer words)~ (turns out this doesn't help)
     - [ ] how can most guess candidates be easily eliminated? Look at pairs of possible answers: a forcing guess must be able to distinguish between them: i.e. the guess candidate must contain at least one of the ambiguous letters between each pair of answer words.
+    - [ ] even this idea can surely be optimized further (but this approach is already producing speed gains by quickly eliminating guesses)
+- [ ] an alternative idea: just make the "is this guess a forcing guess" check faster? maybe by caching some information about the letter-positions in the possible answers
 - [ ] performance analysis: is the clue resolver the bottle-neck? Or should we prune how many guess words are tried?
 
 
