@@ -1,10 +1,12 @@
 """
 Given an answer word and a guess, what would the returned clues be?
 """
+from collections import defaultdict
 from typing import List
 from tqdm import tqdm
 
 from wordle.constants import WORDLE_COLUMNS
+from wordle.word_set_partitioner import _word_to_letter_pos_map
 
 def _reveal_clues(guess_word: str, answer_word: str) -> str:
     # TODO does commenting out these assertions improve performance?
@@ -54,19 +56,76 @@ def check_forcing_guess_naive(guess_candidate: str, possible_answers: List[str])
     return is_forcing_guess
 
 
-def check_forcing_guess_fast(guess_candidate: str, possible_answers: List[str]) -> bool:
-    clues_to_answers = {}
-    is_forcing_guess = True
-    for possible_answer in possible_answers:
-        clues = _reveal_clues(guess_candidate, possible_answer)
-        if clues in clues_to_answers:
-            is_forcing_guess = False
-            # if print_debug:
-            #     print(f"candidate {guess_candidate} not a forcing guess: {clues_to_answers[clues]} and {possible_answer} are both returned by clue {clues}")
-            break
+def get_duplicate_letters(word: str) -> List[str]:
+    freq_map = {}
+    for idx in range(len(word)):
+        letter = word[idx]
+        if letter not in freq_map:
+            freq_map[letter] = 0
+        freq_map[letter] += 1
+    return [ch for ch in freq_map if freq_map[ch] > 1]
+
+
+def check_forcing_guess_fast(guess_candidate: str, possible_answers: List[str], print_debug: bool = False) -> bool:
+    guess_duplicate_letters = get_duplicate_letters(guess_candidate)
+    if print_debug:
+        print(f'forcing guess candidate {guess_candidate.upper()} has duplicate letters: {guess_duplicate_letters}')
+    match_strs_to_answers = {}
+    for answer_word in possible_answers:
+        matches_str = ''
+        for idx in range(len(guess_candidate)):
+            guess_letter = guess_candidate[idx]
+            match_num = 0
+            if guess_letter in answer_word:
+                match_num = 1
+            if answer_word[idx] == guess_letter:
+                match_num = 2
+            matches_str += str(match_num)
+
+        if matches_str not in match_strs_to_answers:
+            match_strs_to_answers[matches_str] = [answer_word,]
         else:
-            clues_to_answers[clues] = set([possible_answer,])
-    return is_forcing_guess
+            match_strs_to_answers[matches_str].append(answer_word)
+            # there was another answer word with the same matches-string, it's probably not a forcing guess
+            if print_debug:
+                print(f'for guess {guess_candidate.upper()}, {match_strs_to_answers[matches_str]} both returned the match-strings: {matches_str}')
+            if len(guess_duplicate_letters) == 0:
+                return False
+
+            # (unless there's a duplicate letter in the guess, in which case the same matches string could be different clue strings)
+            found_disambiguation = False
+            for letter in guess_duplicate_letters:
+                if print_debug:
+                    print(f'checking duplicated letter: {letter}')
+                # where does this letter appear in the answer words that have the same match-str?
+                idx_sets = set()
+                letter_can_disambiguate = True
+                for ambiguous_answer in match_strs_to_answers[matches_str]:
+                    # these are the positions where the letter appears in the answer word (besides those where the letter is matched)
+                    unmatched_letter_idx = {i for i in range(WORDLE_COLUMNS) if ambiguous_answer[i] == letter and guess_candidate[i] != letter}
+                    if print_debug:
+                        print(f'found {letter} at the following unmatched positions in {ambiguous_answer.upper()} with guess {guess_candidate.upper()}: {unmatched_letter_idx}')
+                    letter_idx_set = frozenset()
+                    if len(unmatched_letter_idx) > 0:
+                        # if the letter appears in another position in the answer word besides the matching/green positions, then
+                        # the following positions in the guess candidate would be yellow instead of gray (which is the default
+                        # meaning of the match string including a 0 at that position)
+                        letter_idx_set = frozenset({i for i in range(WORDLE_COLUMNS) if guess_candidate[i] == letter and ambiguous_answer[i] != letter})
+                    if print_debug:
+                        print(f'so {letter} will return yellow clues for {ambiguous_answer.upper()} with guess {guess_candidate.upper()} at these positions: {letter_idx_set}')
+                    if letter_idx_set in idx_sets:
+                        if print_debug:
+                            print(f'for letter {letter}, multiple answer words would have the same positions be non-gray: {letter_idx_set}')
+                        letter_can_disambiguate = False
+                        break
+                    idx_sets.add(letter_idx_set)
+                if letter_can_disambiguate:
+                    found_disambiguation = True
+                    break
+            if not found_disambiguation:
+                return False
+
+    return True
 
 
 def find_forcing_guesses(
@@ -97,8 +156,11 @@ def find_forcing_guesses(
 
     forcing_guess_words = []
     for guess_candidate in guess_wordlist:
-
-        is_forcing_guess = check_forcing_guess_naive(guess_candidate, possible_answers)
+        # is_forcing_guess = check_forcing_guess_naive(guess_candidate, possible_answers)
+        # is_forcing_guess_fast = check_forcing_guess_fast(guess_candidate, possible_answers)
+        # if is_forcing_guess != is_forcing_guess_fast:
+        #     print(f'disagreement on {guess_candidate.upper()}: naive={is_forcing_guess}, fast={is_forcing_guess_fast}')
+        is_forcing_guess = check_forcing_guess_fast(guess_candidate, possible_answers)
         if is_forcing_guess:
             forcing_guess_words.append(guess_candidate)
             if return_early:

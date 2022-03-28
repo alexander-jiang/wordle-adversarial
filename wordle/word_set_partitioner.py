@@ -140,13 +140,41 @@ def forcing_guess_requirements(answer_words: List[str], guess_letters: Optional[
         pass
 
 """
+answer words: ether, other, their, three, threw
+
 letter e appears in answer word positions with this frequency [1, 0, 1, 4, 1]
-letter h appears in answer word positions with this frequency [0, 3, 2, 0, 0]
-letter i appears in answer word positions with this frequency [0, 0, 0, 1, 0]
-letter o appears in answer word positions with this frequency [1, 0, 0, 0, 0]
-letter r appears in answer word positions with this frequency [0, 0, 2, 0, 3]
-letter t appears in answer word positions with this frequency [3, 2, 0, 0, 0]
-letter w appears in answer word positions with this frequency [0, 0, 0, 0, 1]
+letter h appears in answer word positions with this frequency [0, 3, 2, 0, 0] -> {their, three, threw} vs. {ether, other}
+letter i appears in answer word positions with this frequency [0, 0, 0, 1, 0] -> {their} vs. all others
+letter o appears in answer word positions with this frequency [1, 0, 0, 0, 0] -> {other} vs. all others
+letter r appears in answer word positions with this frequency [0, 0, 2, 0, 3] -> {three, threw} vs. {ether, other, their}
+letter t appears in answer word positions with this frequency [3, 2, 0, 0, 0] -> {their, three, threw} vs. {ether, other}
+letter w appears in answer word positions with this frequency [0, 0, 0, 0, 1] -> {threw} vs. all others
+
+three dimensional matrix: letter, position, and answer word index
+e.g. label the answer words with indexes: "ether" is 0, "other" is 1, etc.
+guess candidate = 'ether' ->
+matrix['e'][0]['ether'] = 1
+matrix['t'][1]['ether'] = 1, matrix['t'][1]['other'] = 1
+matrix['h'][2]['ether'] = 1, matrix['h'][2]['other'] = 1
+matrix['e'][3]['ether'] = 1, matrix['e'][3]['other'] = 1, matrix['e'][3]['their'] = 0, matrix['e'][3]['three'] = 1, matrix['e'][3]['threw'] = 1
+matrix['r'][4]['ether'] = 1, matrix['r'][4]['other'] = 1, matrix['r'][4]['their'] = 1, matrix['r'][4]['three'] = 0, matrix['r'][4]['threw'] = 0
+
+then you compare: for each answer word, for each letter-pos in the guess candidate, and each string needs to be different
+(the series of answers to each of the questions needs to be different for each answer word -> this leads to different clues)
+matrix['e', 't', 'h', 'e', 'r'][0-4]['ether'] = 11111
+matrix['e', 't', 'h', 'e', 'r'][0-4]['other'] = 01111
+matrix['e', 't', 'h', 'e', 'r'][0-4]['their'] = 00001
+matrix['e', 't', 'h', 'e', 'r'][0-4]['three'] = 00010 -> different from THREW as the first E in the guess ETHER will be yellow vs. gray
+matrix['e', 't', 'h', 'e', 'r'][0-4]['threw'] = 00010
+
+matrix['t', 'h', 'r', 'e', 'e'][0-4]['ether'] = 00010 -> different from OTHER as the second E in the guess THREE will be yellow vs. gray
+matrix['t', 'h', 'r', 'e', 'e'][0-4]['other'] = 00010
+matrix['t', 'h', 'r', 'e', 'e'][0-4]['their'] = 11000
+matrix['t', 'h', 'r', 'e', 'e'][0-4]['three'] = 11111
+matrix['t', 'h', 'r', 'e', 'e'][0-4]['threw'] = 11110
+
+-> the key optimization? the matrix can be precomputed without knowing the guess candidate
+-> one tricky edge case: when the guess candidate contains multiple of the same letter, then the rules around duplicate letters become tricky
 """
 
 

@@ -180,17 +180,17 @@ def test_contradicting_clues_six_yellow_letters():
     assert not clues.check('fires') # missing T in word
 
 # TODO test: there cannot be >5 yellow or green letters (only at most 5 letters in the word), but there can be <5 yellow or green (if answer word uses a letter multiple times)
-def test_contradicting_clues_six_yellow_or_green_letters():
-    clues = WordleClues()
-    clues.mark('s', WordleLetterState.YELLOW, position=0)
-    clues.mark('i', WordleLetterState.GREEN, position=1)
-    clues.mark('f', WordleLetterState.YELLOW, position=2)
-    clues.mark('r', WordleLetterState.YELLOW, position=3)
-    clues.mark('t', WordleLetterState.GREEN, position=4)
-    with pytest.raises(ContradictingClue):
-        clues.mark('e', WordleLetterState.GREEN, position=3)
-    assert clues.check('first')
-    assert not clues.check('fists') # missing R in word
+# def test_contradicting_clues_six_yellow_or_green_letters():
+#     clues = WordleClues()
+#     clues.mark('s', WordleLetterState.YELLOW, position=0)
+#     clues.mark('i', WordleLetterState.GREEN, position=1)
+#     clues.mark('f', WordleLetterState.YELLOW, position=2)
+#     clues.mark('r', WordleLetterState.YELLOW, position=3)
+#     clues.mark('t', WordleLetterState.GREEN, position=4)
+#     with pytest.raises(ContradictingClue):
+#         clues.mark('e', WordleLetterState.GREEN, position=3)
+#     assert clues.check('first')
+#     assert not clues.check('fists') # missing R in word
 
 
 def test_contradicting_clues_five_yellow_letters_same_position():
