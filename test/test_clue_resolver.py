@@ -3,6 +3,7 @@ from wordle.clue_resolver import (
     find_forcing_guesses,
     check_forcing_guess_naive,
     check_forcing_guess_fast,
+    check_forcing_guess_filter,
 )
 from wordle.word_list_searcher import _read_words_from_file
 import pytest
@@ -133,62 +134,32 @@ def test_answer_nasty():
     assert _reveal_clues('bench', answer_word) == 'rryrr'
     assert _reveal_clues('nasty', answer_word) == 'ggggg'
 
-def test_check_forcing_guess_naive():
+@pytest.mark.parametrize("check_forcing_guess_func", [check_forcing_guess_naive, check_forcing_guess_fast, check_forcing_guess_filter])
+def test_check_forcing_guess(check_forcing_guess_func):
     answer_words = ['chili', 'chill', 'icily', 'skill', 'swill']
     for candidate in ['cowal', 'crawl', 'kahal', 'scowl', 'shawl', 'swayl', 'thowl', 'wheal', 'wheel', 'whirl', 'whorl']:
-        assert check_forcing_guess_naive(candidate, answer_words)
+        assert check_forcing_guess_func(candidate, answer_words)
 
     answer_words = ['faint', 'habit', 'paint', 'saint', 'tacit', 'taint']
     for candidate in ['tapis', 'tipis', 'topis', 'trips']:
-        assert check_forcing_guess_naive(candidate, answer_words)
+        assert check_forcing_guess_func(candidate, answer_words)
 
     answer_words = ['bloke', 'close', 'clove', 'globe', 'glove', 'whole']
-    assert check_forcing_guess_naive('clubs', answer_words)
+    assert check_forcing_guess_func('clubs', answer_words)
 
     answer_words = ['digit', 'ditch', 'lipid', 'livid', 'vivid', 'width']
-    assert check_forcing_guess_naive('devil', answer_words)
+    assert check_forcing_guess_func('devil', answer_words)
 
     answer_words = ['choke', 'chose', 'epoch', 'evoke', 'goose', 'noose', 'ozone', 'phone', 'scone', 'scope', 'shone', 'shove', 'spoke', 'whose']
-    assert check_forcing_guess_naive('synch', answer_words)
+    assert check_forcing_guess_func('synch', answer_words)
 
     answer_words = ['ether', 'other', 'their', 'three', 'threw']
-    assert check_forcing_guess_naive('ether', answer_words)
-    assert check_forcing_guess_naive('three', answer_words)
-    assert not check_forcing_guess_fast('other', answer_words)
-    assert not check_forcing_guess_fast('their', answer_words)
-    assert not check_forcing_guess_fast('threw', answer_words)
-    assert check_forcing_guess_naive('breer', answer_words)
-    assert check_forcing_guess_naive('egger', answer_words)
-    assert check_forcing_guess_naive('tenet', answer_words)
-    assert check_forcing_guess_naive('tweet', answer_words)
-
-# TODO test that there are no false positives i.e. words that are marked as forcing guesses that actually are not
-
-def test_check_forcing_guess_fast():
-    answer_words = ['chili', 'chill', 'icily', 'skill', 'swill']
-    for candidate in ['cowal', 'crawl', 'kahal', 'scowl', 'shawl', 'swayl', 'thowl', 'wheal', 'wheel', 'whirl', 'whorl']:
-        assert check_forcing_guess_fast(candidate, answer_words)
-
-    answer_words = ['faint', 'habit', 'paint', 'saint', 'tacit', 'taint']
-    for candidate in ['tapis', 'tipis', 'topis', 'trips']:
-        assert check_forcing_guess_fast(candidate, answer_words)
-
-    answer_words = ['bloke', 'close', 'clove', 'globe', 'glove', 'whole']
-    assert check_forcing_guess_fast('clubs', answer_words)
-
-    answer_words = ['digit', 'ditch', 'lipid', 'livid', 'vivid', 'width']
-    assert check_forcing_guess_fast('devil', answer_words)
-
-    answer_words = ['choke', 'chose', 'epoch', 'evoke', 'goose', 'noose', 'ozone', 'phone', 'scone', 'scope', 'shone', 'shove', 'spoke', 'whose']
-    assert check_forcing_guess_fast('synch', answer_words)
-
-    answer_words = ['ether', 'other', 'their', 'three', 'threw']
-    assert check_forcing_guess_fast('ether', answer_words)
-    assert check_forcing_guess_fast('three', answer_words)
-    assert not check_forcing_guess_fast('other', answer_words)
-    assert not check_forcing_guess_fast('their', answer_words)
-    assert not check_forcing_guess_fast('threw', answer_words)
-    assert check_forcing_guess_fast('breer', answer_words)
+    assert check_forcing_guess_func('ether', answer_words)
+    assert check_forcing_guess_func('three', answer_words)
+    assert not check_forcing_guess_func('other', answer_words)
+    assert not check_forcing_guess_func('their', answer_words)
+    assert not check_forcing_guess_func('threw', answer_words)
+    assert check_forcing_guess_func('breer', answer_words)
     """
     breer:
     ether -> rrygg
@@ -197,9 +168,11 @@ def test_check_forcing_guess_fast():
     three -> ryygy
     threw -> ryrgy
     """
-    assert check_forcing_guess_fast('egger', answer_words)
-    assert check_forcing_guess_fast('tenet', answer_words)
-    assert check_forcing_guess_fast('tweet', answer_words)
+    assert check_forcing_guess_func('egger', answer_words)
+    assert check_forcing_guess_func('tenet', answer_words)
+    assert check_forcing_guess_func('tweet', answer_words)
+
+# TODO test that there are no false positives i.e. words that are marked as forcing guesses that actually are not
 
 
 # def test_forcing_guess():

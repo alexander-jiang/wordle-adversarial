@@ -1,12 +1,12 @@
 """
 Given an answer word and a guess, what would the returned clues be?
 """
-from collections import defaultdict
+import time
 from typing import List
 from tqdm import tqdm
 
 from wordle.constants import WORDLE_COLUMNS
-from wordle.word_set_partitioner import _word_to_letter_pos_map
+from wordle.word_set_partitioner import _word_to_letter_pos_map, required_letter_positions_for_forcing_guess
 
 def _reveal_clues(guess_word: str, answer_word: str) -> str:
     # TODO does commenting out these assertions improve performance?
@@ -41,7 +41,7 @@ def _reveal_clues(guess_word: str, answer_word: str) -> str:
     return "".join(clues_by_pos)
 
 
-def check_forcing_guess_naive(guess_candidate: str, possible_answers: List[str]) -> bool:
+def check_forcing_guess_naive(guess_candidate: str, possible_answers: List[str], print_debug: bool = False) -> bool:
     clues_to_answers = {}
     is_forcing_guess = True
     for possible_answer in possible_answers:
@@ -75,11 +75,12 @@ def check_forcing_guess_fast(guess_candidate: str, possible_answers: List[str], 
         matches_str = ''
         for idx in range(len(guess_candidate)):
             guess_letter = guess_candidate[idx]
-            match_num = 0
-            if guess_letter in answer_word:
-                match_num = 1
             if answer_word[idx] == guess_letter:
                 match_num = 2
+            elif guess_letter in answer_word:
+                match_num = 1
+            else:
+                match_num = 0
             matches_str += str(match_num)
 
         if matches_str not in match_strs_to_answers:
@@ -128,6 +129,29 @@ def check_forcing_guess_fast(guess_candidate: str, possible_answers: List[str], 
     return True
 
 
+def check_forcing_guess_filter(guess_candidate: str, possible_answers: List[str], print_debug: bool = False) -> bool:
+    ambiguous_letter_sets = required_letter_positions_for_forcing_guess(possible_answers, print_debug=print_debug)
+    for ambiguous_letters in ambiguous_letter_sets:
+        if ambiguous_letters.isdisjoint(guess_candidate):
+            if print_debug:
+                print(
+                    f'guess {guess_candidate.upper()} is not a forcing guess: missing a letter from {ambiguous_letters}'
+                )
+            return False
+
+    clues_to_answers = {}
+    is_forcing_guess = True
+    for possible_answer in possible_answers:
+        clues = _reveal_clues(guess_candidate, possible_answer)
+        if clues in clues_to_answers:
+            is_forcing_guess = False
+            # if print_debug:
+            #     print(f"candidate {guess_candidate} not a forcing guess: {clues_to_answers[clues]} and {possible_answer} are both returned by clue {clues}")
+            break
+        else:
+            clues_to_answers[clues] = set([possible_answer,])
+    return is_forcing_guess
+
 def find_forcing_guesses(
     guess_wordlist: List[str],
     possible_answers: List[str],
@@ -155,15 +179,31 @@ def find_forcing_guesses(
         print("Searching for forcing guesses...")
 
     forcing_guess_words = []
+    ambiguous_letter_sets = required_letter_positions_for_forcing_guess(possible_answers)
+    num_skipped = 0
+    num_checked = 0
+    start_time = time.perf_counter()
     for guess_candidate in guess_wordlist:
-        # is_forcing_guess = check_forcing_guess_naive(guess_candidate, possible_answers)
-        # is_forcing_guess_fast = check_forcing_guess_fast(guess_candidate, possible_answers)
-        # if is_forcing_guess != is_forcing_guess_fast:
-        #     print(f'disagreement on {guess_candidate.upper()}: naive={is_forcing_guess}, fast={is_forcing_guess_fast}')
-        is_forcing_guess = check_forcing_guess_fast(guess_candidate, possible_answers)
+        num_checked += 1
+        is_forcing_guess = True
+        for ambiguous_letters in ambiguous_letter_sets:
+            if ambiguous_letters.isdisjoint(guess_candidate):
+                # print(
+                #     f'guess {guess_candidate.upper()} is not a forcing guess: missing a letter from {ambiguous_letters}'
+                # )
+                is_forcing_guess = False
+                break
+        if not is_forcing_guess:
+            num_skipped += 1
+            continue
+
+        is_forcing_guess = check_forcing_guess_naive(guess_candidate, possible_answers)
         if is_forcing_guess:
             forcing_guess_words.append(guess_candidate)
             if return_early:
+                elapsed_time = time.perf_counter() - start_time
+                if print_debug:
+                    print(f'total {num_checked}, skipped {num_skipped}. total time: {elapsed_time}, avg duration {elapsed_time / num_checked}')
                 return forcing_guess_words
 
     if len(forcing_guess_words) > 0:
@@ -177,6 +217,10 @@ def find_forcing_guesses(
     else:
         if print_debug:
             print("No forcing guesses found")
+
+    elapsed_time = time.perf_counter() - start_time
+    if print_debug:
+        print(f'total {num_checked}, skipped {num_skipped}. total time: {elapsed_time}, avg duration {elapsed_time / num_checked}')
     return forcing_guess_words
 
 def find_win_in_2_guesses(

@@ -42,63 +42,39 @@ def partition(words: List[str], print_debug: bool = True) -> List[str]:
 
 # of any two possible answer words, a forcing guess must be able to differentiate them: build a set of letters such that
 # a forcing guess must contain at least one of the returned letters
-# Note: just checking letters is too strict: what if two words share the same letters but in different positions? then a guess could
-# differentiate between them if it checked the letters in specific positions
-def required_letter_positions_for_forcing_guess(answer_words: List[str], print_debug: bool = True) -> Dict[Tuple[str, str], Tuple[MutableSet[str], MutableSet[Tuple[int, str]]]]:
-    required_letter_positions = {}
+# Note: requiring at least one of the ambiguous letters is too strict: what if two possible answer words share the same letter but in
+# different positions? then a guess could differentiate between them if it checked the letter in specific positions
+def required_letter_positions_for_forcing_guess(answer_words: List[str], print_debug: bool = True) -> List[MutableSet[str]]:
+    required_letter_positions = []
     for word1, word2 in itertools.combinations(answer_words, 2):
-        ambiguous_letter_positions = set()
         ambiguous_letters = set()
-
         for i in range(len(word1)):
-            letter1 = word1[i]
-            letter2 = word2[i]
-            if letter1 == letter2:
-                continue # no way to distinguish
+            if word1[i] != word2[i]:
+                ambiguous_letters.add(word1[i])
+                ambiguous_letters.add(word2[i])
 
-            # can always distinguish by guessing letter1 in this position or letter2 in this position
-            ambiguous_letter_positions.update([(letter1, i), (letter2, i)])
+        # print(f'found ambiguous letters {ambiguous_letters} for words {word1.upper()}, {word2.upper()}')
 
-            if letter1 not in word2:
-                # can distinguish by guessing letter1 in any position
-                ambiguous_letter_positions.update([(letter1, i) for i in range(len(word1))])
-                ambiguous_letters.add(letter1)
-            else:
-                # if word2's occurrences of letter1 don't all match up with word1's occurrences of letter1, we
-                # can distinguish by guessing letter1 at any index (where word1 and word2 don't both have letter1)
-                covered = True
-                for j in range(len(word2)):
-                    if word2[j] == letter1 and word1[j] != letter1:
-                        covered = False
-                        break
-                if covered:
-                    for j in range(len(word2)):
-                        if word2[j] != letter1 or word1[j] != letter1:
-                            ambiguous_letter_positions.add((letter1, j))
-                # otherwise, you can't distinguish by guessing letter1 (except at index i, which is already accounted for above)
+        # check if the set of ambiguous letters is redundant (i.e. superset of an existing letter set)
+        redundant = False
+        for letter_set in required_letter_positions:
+            if ambiguous_letters >= letter_set:
+                redundant = True
+                break
+        if not redundant:
+            required_letter_positions.append(ambiguous_letters)
+            # print(f'added letter set {ambiguous_letters}')
+            # filter out letter sets that are a superset of this letter set
+            # original_len = len(required_letter_positions)
+            required_letter_positions = [letter_set for letter_set in required_letter_positions if not (letter_set > ambiguous_letters)]
+            # new_len = len(required_letter_positions)
+            # if new_len < original_len:
+            #     print(f'required_letter_positions = {required_letter_positions}')
 
-            if letter2 not in word1:
-                # can distinguish by guessing letter2 in any position
-                ambiguous_letter_positions.update([(letter2, i) for i in range(len(word2))])
-                ambiguous_letters.add(letter2)
-            else:
-                # if word1's occurrences of letter2 don't all match up with word2's occurrences of letter2, we
-                # can distinguish by guessing letter2 at any index (where word2 and word1 don't both have letter2)
-                covered = True
-                for j in range(len(word1)):
-                    if word1[j] == letter2 and word2[j] != letter2:
-                        covered = False
-                        break
-                if covered:
-                    for j in range(len(word1)):
-                        if word1[j] != letter2 or word2[j] != letter2:
-                            ambiguous_letter_positions.add((letter2, j))
-                # otherwise, you can't distinguish by guessing letter2 (except at index i, which is already accounted for above)
-
-        required_letter_positions[(word1, word2)] = ambiguous_letters, ambiguous_letter_positions
-
+    # print(f'FINAL required_letter_positions = {required_letter_positions}')
     return required_letter_positions
 
+"""
 def _word_to_letter_pos_map(word: str) -> Dict[str, MutableSet[int]]:
     # TODO update this to return a matrix: rows = letters, columns = positions
     letter_pos_map = {}
@@ -138,6 +114,7 @@ def forcing_guess_requirements(answer_words: List[str], guess_letters: Optional[
     # TODO what about letters that appear multiple times in an answer word?
     def scoring_func(guess_candidate: str) -> int:
         pass
+"""
 
 """
 answer words: ether, other, their, three, threw
@@ -177,7 +154,7 @@ matrix['t', 'h', 'r', 'e', 'e'][0-4]['threw'] = 11110
 -> one tricky edge case: when the guess candidate contains multiple of the same letter, then the rules around duplicate letters become tricky
 """
 
-
+"""
 def can_partition_with_guess(answer_words: List[str], guess_letters: Optional[List[Optional[str]]] = None) -> bool:
     if guess_letters is None:
         guess_letters = [None for _ in range(WORDLE_COLUMNS)]
@@ -227,7 +204,7 @@ def can_partition_with_guess(answer_words: List[str], guess_letters: Optional[Li
             if able_to_partition:
                 return able_to_partition
     return False
-
+"""
 
 def pick_narrowing_guesses_by_letters(letters: List[str], guess_wordlist: List[str]):
     best_guesses = []
