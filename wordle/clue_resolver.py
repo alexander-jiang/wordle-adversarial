@@ -6,7 +6,7 @@ from typing import List
 from tqdm import tqdm
 
 from wordle.constants import WORDLE_COLUMNS
-from wordle.word_set_partitioner import _word_to_letter_pos_map, required_letter_positions_for_forcing_guess
+from wordle.word_set_partitioner import required_letter_positions_for_forcing_guess
 
 def _reveal_clues(guess_word: str, answer_word: str) -> str:
     # TODO does commenting out these assertions improve performance?

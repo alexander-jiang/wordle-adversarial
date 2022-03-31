@@ -7,7 +7,6 @@ from wordle.clue_resolver import (
 )
 from wordle.word_list_searcher import _read_words_from_file
 import pytest
-import timeit
 from typing import List
 
 def test_answer_caulk():
@@ -174,66 +173,25 @@ def test_check_forcing_guess(check_forcing_guess_func):
 
 # TODO test that there are no false positives i.e. words that are marked as forcing guesses that actually are not
 
+@pytest.mark.parametrize("check_forcing_guess_func", [check_forcing_guess_naive, check_forcing_guess_fast, check_forcing_guess_filter])
+def test_check_forcing_guess_negatives(check_forcing_guess_func):
+    guess_wordlist_path = '3b1b-data/allowed_words.txt'
+    guess_wordlist = _read_words_from_file(guess_wordlist_path)
 
-# def test_forcing_guess():
-#     guess_wordlist_path = '3b1b-data/allowed_words.txt'
-#     guess_wordlist = _read_words_from_file(guess_wordlist_path)
+    answer_words = ['chili', 'chill', 'icily', 'skill', 'swill']
+    forcing_guesses = ['cowal', 'crawl', 'kahal', 'scowl', 'shawl', 'swayl', 'thowl', 'wheal', 'wheel', 'whirl', 'whorl']
+    for candidate in guess_wordlist:
+        if candidate not in forcing_guesses:
+            assert not check_forcing_guess_func(candidate, answer_words)
 
-#     # Can distinguish between CHILL and CHILI, or SKILL and SWILL
-#     answer_words = ['chili', 'chill', 'icily', 'skill', 'swill']
-#     assert set(['cowal', 'crawl', 'kahal', 'scowl', 'shawl', 'swayl', 'thowl', 'wheal', 'wheel', 'whirl', 'whorl']) == set(find_forcing_guesses(
-#         guess_wordlist,
-#         possible_answers=answer_words,
-#         return_early=False,
-#         print_debug=False,
-#     ))
+    answer_words = ['faint', 'habit', 'paint', 'saint', 'tacit', 'taint']
+    forcing_guesses = ['tapis', 'tipis', 'topis', 'trips']
+    for candidate in guess_wordlist:
+        if candidate not in forcing_guesses:
+            assert not check_forcing_guess_func(candidate, answer_words)
 
-#     answer_words = ['shade', 'shake', 'shame', 'shape', 'shave']
-#     assert len(find_forcing_guesses(
-#         guess_wordlist,
-#         possible_answers=answer_words,
-#         return_early=False,
-#         print_debug=False,
-#     )) == 0
-
-#     answer_words = ['faint', 'habit', 'paint', 'saint', 'tacit', 'taint']
-#     assert set(['tapis', 'tipis', 'topis', 'trips']) == set(find_forcing_guesses(
-#         guess_wordlist,
-#         possible_answers=answer_words,
-#         return_early=False,
-#         print_debug=False,
-#     ))
-
-#     answer_words = ['bloke', 'close', 'clove', 'globe', 'glove', 'whole']
-#     assert 'clubs' in find_forcing_guesses(
-#         guess_wordlist,
-#         possible_answers=answer_words,
-#         return_early=False,
-#         print_debug=False,
-#     )
-
-#     answer_words = ['digit', 'ditch', 'lipid', 'livid', 'vivid', 'width']
-#     assert 'devil' in find_forcing_guesses(
-#         guess_wordlist,
-#         possible_answers=answer_words,
-#         return_early=False,
-#         print_debug=False,
-#     )
-
-#     answer_words = ['choke', 'chose', 'epoch', 'evoke', 'goose', 'noose', 'ozone', 'phone', 'scone', 'scope', 'shone', 'shove', 'spoke', 'whose']
-#     assert ['synch'] == find_forcing_guesses(
-#         guess_wordlist,
-#         possible_answers=answer_words,
-#         return_early=False,
-#         print_debug=False,
-#     )
-
-#     # Can distinguish between THREE and THREW by guessing an E outside of the 4th position
-#     answer_words = ['ether', 'other', 'their', 'three', 'threw']
-#     forcing_guesses = find_forcing_guesses(
-#         guess_wordlist,
-#         possible_answers=answer_words,
-#         return_early=False,
-#         print_debug=False,
-#     )
-#     assert 'ether' in forcing_guesses and 'three' in forcing_guesses
+    answer_words = ['choke', 'chose', 'epoch', 'evoke', 'goose', 'noose', 'ozone', 'phone', 'scone', 'scope', 'shone', 'shove', 'spoke', 'whose']
+    forcing_guesses = ['synch']
+    for candidate in guess_wordlist:
+        if candidate not in forcing_guesses:
+            assert not check_forcing_guess_func(candidate, answer_words)
