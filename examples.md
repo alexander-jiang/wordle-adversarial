@@ -153,3 +153,15 @@ slosh - ggggg
 triad - ryrrr (164 answer words left after this clue, no forcing guesses)
 rouge - yrygg (2 answer words left after this clue: purge, surge)
 purge - ggggg
+
+
+sigma - grrrr (136 answer words left after this clue, no forcing guesses, no guesses that win in 2) **maybe there is a different clue string that has more answer words but such that there is a guess that forces a win in 2 i.e. a counterexample to the set-maximization strategy as the optimal adversarial strategy)** -> if the clue for the first guess of SIGMA was rrrrr, then there are 458 answer words left, with no guesses that win in 2
+chore - rrgrg (6 answer words left after this clue: slope, spoke, stoke, stole, stone, stove. 5 forcing guesses: 'knelt', 'plank', 'plink', 'plonk', 'plunk')
+slope - grgrg (3 answer words left after this clue: stoke, stone, stove. 430 forcing guesses)
+stoke - gggrg (2 answer words left after this clue: stone, stove)
+stone - gggrg
+stove - ggggg
+
+hairy - ryryg (10 answer words left after this clue: array, artsy, crazy, foray, gravy, ready, relay, repay, spray, stray. No forcing guesses, but guessing AAHED forces a win in 2: {'yyryr': ['repay', 'relay'], 'yyrrr': ['agast'], 'yyryy': ['ready'], 'gyrrr': ['array'], 'grrrr': ['artsy']})
+bread - ryrgr (3 answer words left: foray, spray, stray. 3123 total forcing guesses, including SPRAY and STRAY)
+foray - ggggg

@@ -235,6 +235,10 @@ def find_win_in_2_guesses(
     """
     print("Searching for guesses that win in 2...")
     win_in_2_guess_words = []
+    # TODO could generalize this to a data structure that keeps only sets that are not supersets of any other set in the list
+    # (see also required_letter_positions_for_forcing_guess)
+    non_forcing_guess_word_sets = []
+    answer_breaking_freqs = {}
     # TODO add performance benchmarking
     for guess_candidate in tqdm(guess_wordlist):
         clues_to_answers = {}
@@ -246,18 +250,41 @@ def find_win_in_2_guesses(
 
         is_win_in_2_guess = True
         clues_to_forcing_guesses = {}
+        # the order in which you consider the possible revealed clue-strings changes the frequencies
         for possible_reveal_clues, next_possible_answers in clues_to_answers.items():
-            forcing_guesses = find_forcing_guesses(
-                guess_wordlist,
-                next_possible_answers,
-                return_early=True,
-                print_debug=False,
-            )
+            new_word_set = set(next_possible_answers)
+            superset_of_non_forcing_word_set = False
+            for word_set in non_forcing_guess_word_sets:
+                if new_word_set >= word_set:
+                    superset_of_non_forcing_word_set = True
+                    break
+
+            if not superset_of_non_forcing_word_set:
+                forcing_guesses = find_forcing_guesses(
+                    guess_wordlist,
+                    next_possible_answers,
+                    return_early=True,
+                    print_debug=False,
+                )
+            else:
+                forcing_guesses = []
+
             if len(forcing_guesses) == 0:
                 is_win_in_2_guess = False
+                # remove existing redundant word sets (those that include this one)
+                non_forcing_guess_word_sets = [word_set for word_set in non_forcing_guess_word_sets if not (new_word_set <= word_set)]
+                # only add this word set if it is not redundant
+                redundant = False
+                for word_set in non_forcing_guess_word_sets:
+                    if word_set <= new_word_set:
+                        redundant = True
+                        break
+                if not redundant:
+                    non_forcing_guess_word_sets.append(new_word_set)
                 break
             else:
                 clues_to_forcing_guesses[possible_reveal_clues] = forcing_guesses
+
         if is_win_in_2_guess:
             win_in_2_guess_words.append(guess_candidate)
             print(f'Found a guess that wins in 2: {guess_candidate}! follow-up forcing guesses:')
@@ -267,4 +294,11 @@ def find_win_in_2_guesses(
 
     if len(win_in_2_guess_words) == 0:
         print("No guesses that win in 2 found")
+        # print(f'sets of answer words with no forcing guess: {non_forcing_guess_word_sets}')
+        for word_set in non_forcing_guess_word_sets:
+            for word in word_set:
+                if word not in answer_breaking_freqs:
+                    answer_breaking_freqs[word] = 0
+                answer_breaking_freqs[word] += 1
+        print(f'answer breaking freqs: {answer_breaking_freqs}')
     return win_in_2_guess_words
